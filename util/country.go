@@ -19,6 +19,7 @@ func getCountry(userID snowflake.ID, hintType HintType) (discord.Embed, []discor
 	country := data.CountryMap[cca]
 	embedBuilder := discord.NewEmbedBuilder()
 	embedBuilder.SetTitle("Guess the flag!")
+	embedBuilder.SetDescriptionf("Game of <@%d>", userID)
 	embedBuilder.SetColor(0xFFFFFF)
 	embedBuilder.SetImage(country.Flags.Png)
 	embedBuilder.SetFooterText("Country data provided by restcountries.com")
