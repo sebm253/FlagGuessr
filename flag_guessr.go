@@ -28,7 +28,8 @@ func main() {
 	log.Info("disgo version: ", disgo.Version)
 
 	client, err := disgo.New(os.Getenv("FLAG_GUESSR_TOKEN"),
-		bot.WithGatewayConfigOpts(gateway.WithIntents(gateway.IntentsNone)),
+		bot.WithGatewayConfigOpts(gateway.WithIntents(gateway.IntentsNone),
+			gateway.WithPresence(gateway.NewWatchingPresence("your guesses", discord.OnlineStatusOnline, false))),
 		bot.WithCacheConfigOpts(cache.WithCacheFlags(cache.FlagsNone)),
 		bot.WithEventListeners(&events.ListenerAdapter{
 			OnApplicationCommandInteraction: onCommand,
