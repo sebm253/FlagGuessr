@@ -21,7 +21,8 @@ func getCountry(userID snowflake.ID, hintType HintType) (discord.Embed, []discor
 	embedBuilder.SetTitle("Guess the flag!")
 	embedBuilder.SetColor(0xFFFFFF)
 	embedBuilder.SetImage(country.Flags.Png)
-	return embedBuilder.Build(), GetGuessButtons(userID, cca, hintType)
+	embedBuilder.SetFooterText("Country data provided by restcountries.com")
+	return embedBuilder.Build(), GetGuessButtons(userID, cca, hintType, false)
 }
 
 func GetCountryCreate(userID snowflake.ID, hintType HintType) discord.MessageCreate {

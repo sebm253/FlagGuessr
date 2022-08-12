@@ -100,38 +100,43 @@ func onButton(event *events.ComponentInteractionCreate) {
 			log.Error("there was an error while creating modal: ", err)
 		}
 	} else if action == util.NewCountry {
-		messageUpdate := util.GetCountryUpdate(userID, util.HintType(0))
-		err := event.UpdateMessage(messageUpdate)
+		err := event.UpdateMessage(util.GetCountryUpdate(userID, util.HintType(0)))
 		if err != nil {
 			log.Error("there was an error while updating message with new country: ", err)
 		}
 		content := fmt.Sprintf("The country was **%s**.", name)
-		util.SendFollowup(client, event.BaseInteraction, content, util.GetDetailsButton(userID, cca), util.GetDeleteButton(userID, cca))
+		err = util.SendFollowup(event, client, content, false, util.GetDetailsButton(userID, cca), util.GetDeleteButton(userID, cca))
+		if err != nil {
+			log.Error("there was an error while creating forfeit message: ", err)
+		}
 	} else if action == util.Delete {
 		err := client.DeleteMessage(event.ChannelID(), event.Message.ID)
 		if err != nil {
 			log.Error("there was an error while deleting message: ", err)
 		}
 	} else if action == util.Hint {
+		messageUpdateBuilder := discord.NewMessageUpdateBuilder()
 		i, _ := strconv.Atoi(split[3])
 		hintType := util.HintType(i)
 		var hint string
+		lastHint := hintType == util.Capitals
 		if hintType == util.Population {
 			hint = fmt.Sprintf("The population of this country is %s.", util.FormatPopulation(country))
 		} else if hintType == util.Tlds {
 			hint = fmt.Sprintf("The Top Level Domains of this country are **%s**.", strings.Join(country.Tlds, ", "))
-		} else if hintType == util.Capitals {
+		} else if lastHint {
 			hint = fmt.Sprintf("The capitals of this country are **%s**.", strings.Join(country.Capitals, ", "))
 		}
-		messageUpdate := discord.MessageUpdate{
-			Embeds: &event.Message.Embeds,
-		}
-		messageUpdate.Components = &[]discord.ContainerComponent{discord.ActionRowComponent(util.GetGuessButtons(userID, cca, hintType+1))}
-		err := event.UpdateMessage(messageUpdate)
+		err := event.UpdateMessage(messageUpdateBuilder.
+			AddActionRow(util.GetGuessButtons(userID, cca, hintType+1, util.Ternary(lastHint, true, false))...).
+			Build())
 		if err != nil {
-			log.Error("there was an error while updating message with new hint: ", err)
+			log.Error("there was an error while updating message after hint usage: ", err)
 		}
-		util.SendFollowup(client, event.BaseInteraction, hint, util.GetDeleteButton(userID, cca))
+		err = util.SendFollowup(event, client, hint, true, util.GetDeleteButton(userID, cca))
+		if err != nil {
+			log.Error("there was an error while creating hint message: ", err)
+		}
 	}
 }
 
@@ -145,14 +150,28 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 	messageBuilder := discord.NewMessageCreateBuilder()
 	var err error
 	if lower == strings.ToLower(common) || lower == strings.ToLower(name.Official) {
+		flag := country.Flag
+		embedBuilder := discord.NewEmbedBuilder()
+		embedBuilder.SetTitle("You got the country right!")
+		embedBuilder.SetDescriptionf("It was **%s**. %s", common, flag)
+		embedBuilder.SetColor(0x4dbf36)
 		userID := event.User().ID
-		err = event.UpdateMessage(util.GetCountryUpdate(userID, util.HintType(0)))
+		err = event.UpdateMessage(discord.NewMessageUpdateBuilder().
+			SetEmbeds(embedBuilder.Build()).
+			AddActionRow(util.GetDetailsButton(userID, cca)).
+			Build())
 		if err != nil {
 			log.Error("there was an error while updating original message: ", err)
 		}
 		client := event.Client().Rest()
-		content := fmt.Sprintf("Your guess was correct! It was **%s**. New flag to guess has been prepared!", common)
-		util.SendFollowup(client, event.BaseInteraction, content, util.GetDetailsButton(userID, cca), util.GetDeleteButton(userID, cca))
+		_, err = client.CreateFollowupMessage(event.ApplicationID(), event.Token(), util.GetCountryCreate(userID, util.HintType(0)))
+		if err != nil {
+			log.Error("there was an error while creating new country message: ", err)
+		}
+		err = util.SendFollowup(event, client, fmt.Sprintf("Your guess was correct! It was **%s**. %s", common, flag), true)
+		if err != nil {
+			log.Error("there was an error while creating correct guess message: ", err)
+		}
 	} else {
 		err = event.CreateMessage(messageBuilder.
 			SetContent("Your guess was incorrect. Please try again.").
