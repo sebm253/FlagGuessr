@@ -128,7 +128,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 			hint = fmt.Sprintf("The capitals of this country are **%s**.", strings.Join(country.Capitals, ", "))
 		}
 		err := event.UpdateMessage(messageUpdateBuilder.
-			AddActionRow(util.GetGuessButtons(userID, cca, hintType+1, util.Ternary(lastHint, true, false))...).
+			AddActionRow(util.GetGuessButtons(userID, cca, hintType+1, lastHint)...).
 			Build())
 		if err != nil {
 			log.Error("there was an error while updating message after hint usage: ", err)
