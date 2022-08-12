@@ -142,7 +142,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 
 func onModal(event *events.ModalSubmitInteractionCreate) {
 	evData := event.Data
-	lower := strings.ToLower(evData.Text("name"))
+	lower := strings.TrimSpace(strings.ToLower(evData.Text("name")))
 	cca := evData.CustomID
 	country := data.CountryMap[cca]
 	name := country.Name
