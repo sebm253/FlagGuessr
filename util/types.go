@@ -16,4 +16,6 @@ const (
 	Population HintType = iota
 	Tlds
 	Capitals
+	//FirstLetter
+	//LastLetter
 )
