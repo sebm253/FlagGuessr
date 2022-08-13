@@ -3,18 +3,18 @@ package util
 import (
 	"fmt"
 	"math/rand"
-	"reflect"
 	"strings"
 
 	"flag-guessr/data"
 	"github.com/disgoorg/disgo/discord"
+	"golang.org/x/exp/maps"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
 func getCountry(user discord.User, hintType HintType) (discord.Embed, []discord.InteractiveComponent) {
-	keys := reflect.ValueOf(data.CountryMap).MapKeys()
-	cca := keys[rand.Intn(len(keys))].String()
+	keys := maps.Keys(data.CountryMap)
+	cca := keys[rand.Intn(len(keys))]
 	country := data.CountryMap[cca]
 	userID := user.ID
 	embedBuilder := discord.NewEmbedBuilder()
