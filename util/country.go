@@ -18,7 +18,7 @@ func getCountry(user discord.User, hintType HintType) (discord.Embed, []discord.
 	country := data.CountryMap[cca]
 	userID := user.ID
 	embedBuilder := discord.NewEmbedBuilder()
-	embedBuilder.SetTitle("Guess the flag!")
+	embedBuilder.SetTitle("Guess the country!")
 	embedBuilder.SetDescriptionf("Game of <@%d>", userID)
 	embedBuilder.SetColor(0xFFFFFF)
 	embedBuilder.SetImage(country.Flags.Png)
