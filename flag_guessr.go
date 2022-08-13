@@ -101,15 +101,19 @@ func onButton(event *events.ComponentInteractionCreate) {
 			log.Error("there was an error while creating modal: ", err)
 		}
 	} else if action == util.NewCountry {
-		err := event.UpdateMessage(util.GetCountryUpdate(user, util.HintType(0)))
-		if err != nil {
-			log.Error("there was an error while updating message with new country: ", err)
-		}
-		content := fmt.Sprintf("The country was **%s**.", name)
-		err = util.SendFollowup(event, client, content, false, util.GetDetailsButton(userID, cca), util.GetDeleteButton(userID, cca))
-		if err != nil {
-			log.Error("there was an error while creating forfeit message: ", err)
-		}
+		flag := country.Flag
+		embedBuilder := discord.NewEmbedBuilder()
+		embedBuilder.SetTitle("You skipped a country.")
+		embedBuilder.SetDescriptionf("It was **%s**. %s", name, flag)
+		embedBuilder.SetColor(0x5386c9)
+		util.SendNewCountryMessages(util.NewCountryData{
+			Interaction:     event,
+			User:            user,
+			EmbedBuilder:    *embedBuilder,
+			FollowupContent: fmt.Sprintf("The country was **%s**. %s", name, flag),
+			Cca:             cca,
+			Client:          client,
+		})
 	} else if action == util.Delete {
 		err := client.DeleteMessage(event.ChannelID(), event.Message.ID)
 		if err != nil {
@@ -148,7 +152,6 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 	country := data.CountryMap[cca]
 	name := country.Name
 	common := name.Common
-	messageBuilder := discord.NewMessageCreateBuilder()
 	var err error
 	if lower == strings.ToLower(common) || lower == strings.ToLower(name.Official) {
 		flag := country.Flag
@@ -156,26 +159,16 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 		embedBuilder.SetTitle("You got the country right!")
 		embedBuilder.SetDescriptionf("It was **%s**. %s", common, flag)
 		embedBuilder.SetColor(0x4dbf36)
-		user := event.User()
-		userID := user.ID
-		err = event.UpdateMessage(discord.NewMessageUpdateBuilder().
-			SetEmbeds(embedBuilder.Build()).
-			AddActionRow(util.GetDetailsButton(userID, cca)).
-			Build())
-		if err != nil {
-			log.Error("there was an error while updating original message: ", err)
-		}
-		client := event.Client().Rest()
-		_, err = client.CreateFollowupMessage(event.ApplicationID(), event.Token(), util.GetCountryCreate(user, util.HintType(0)))
-		if err != nil {
-			log.Error("there was an error while creating new country message: ", err)
-		}
-		err = util.SendFollowup(event, client, fmt.Sprintf("Your guess was correct! It was **%s**. %s", common, flag), true)
-		if err != nil {
-			log.Error("there was an error while creating correct guess message: ", err)
-		}
+		util.SendNewCountryMessages(util.NewCountryData{
+			Interaction:     event,
+			User:            event.User(),
+			EmbedBuilder:    *embedBuilder,
+			FollowupContent: fmt.Sprintf("Your guess was correct! It was **%s**. %s", common, flag),
+			Cca:             cca,
+			Client:          event.Client().Rest(),
+		})
 	} else {
-		err = event.CreateMessage(messageBuilder.
+		err = event.CreateMessage(discord.NewMessageCreateBuilder().
 			SetContent("Your guess was incorrect. Please try again.").
 			SetEphemeral(true).
 			Build())

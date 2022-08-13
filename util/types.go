@@ -1,5 +1,10 @@
 package util
 
+import (
+	"github.com/disgoorg/disgo/discord"
+	"github.com/disgoorg/disgo/rest"
+)
+
 type Action string
 
 const (
@@ -17,3 +22,12 @@ const (
 	Tlds
 	Capitals
 )
+
+type NewCountryData struct {
+	Interaction     discord.BaseInteraction
+	User            discord.User
+	EmbedBuilder    discord.EmbedBuilder
+	FollowupContent string
+	Cca             string
+	Client          rest.Rest
+}
