@@ -92,7 +92,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 	if action == util.Guess {
 		err := event.CreateModal(discord.NewModalCreateBuilder().
 			SetCustomID(cca).
-			SetTitle("Guess the flag!").
+			SetTitle("Guess the country!").
 			AddActionRow(discord.NewShortTextInput("name", "Country name").
 				WithPlaceholder("This field is case-insensitive.").
 				WithRequired(true)).
