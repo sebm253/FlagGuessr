@@ -54,7 +54,7 @@ func main() {
 
 func onCommand(event *events.ApplicationCommandInteractionCreate) {
 	if event.Data.CommandName() == "flag" {
-		_ = event.CreateMessage(util.GetCountryCreate(event.User().ID, util.HintType(0)))
+		_ = event.CreateMessage(util.GetCountryCreate(event.User(), util.HintType(0)))
 	}
 }
 
@@ -62,7 +62,6 @@ func onButton(event *events.ComponentInteractionCreate) {
 	id := event.Data.CustomID()
 	split := strings.Split(id, "-")
 	action := util.Action(split[0])
-	user := split[1]
 	cca := split[2]
 	country := data.CountryMap[cca]
 	name := country.Name.Common
@@ -77,8 +76,9 @@ func onButton(event *events.ComponentInteractionCreate) {
 		}
 		return
 	}
-	userID := event.User().ID
-	if user != userID.String() {
+	user := event.User()
+	userID := user.ID
+	if split[1] != userID.String() {
 		err := event.CreateMessage(messageBuilder.
 			SetContent("You can't interact with games of other users! Launch your own game by using </flag:1007718785345667284>.").
 			SetEphemeral(true).
@@ -101,7 +101,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 			log.Error("there was an error while creating modal: ", err)
 		}
 	} else if action == util.NewCountry {
-		err := event.UpdateMessage(util.GetCountryUpdate(userID, util.HintType(0)))
+		err := event.UpdateMessage(util.GetCountryUpdate(user, util.HintType(0)))
 		if err != nil {
 			log.Error("there was an error while updating message with new country: ", err)
 		}
@@ -156,7 +156,8 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 		embedBuilder.SetTitle("You got the country right!")
 		embedBuilder.SetDescriptionf("It was **%s**. %s", common, flag)
 		embedBuilder.SetColor(0x4dbf36)
-		userID := event.User().ID
+		user := event.User()
+		userID := user.ID
 		err = event.UpdateMessage(discord.NewMessageUpdateBuilder().
 			SetEmbeds(embedBuilder.Build()).
 			AddActionRow(util.GetDetailsButton(userID, cca)).
@@ -165,7 +166,7 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 			log.Error("there was an error while updating original message: ", err)
 		}
 		client := event.Client().Rest()
-		_, err = client.CreateFollowupMessage(event.ApplicationID(), event.Token(), util.GetCountryCreate(userID, util.HintType(0)))
+		_, err = client.CreateFollowupMessage(event.ApplicationID(), event.Token(), util.GetCountryCreate(user, util.HintType(0)))
 		if err != nil {
 			log.Error("there was an error while creating new country message: ", err)
 		}

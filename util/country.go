@@ -8,34 +8,35 @@ import (
 
 	"flag-guessr/data"
 	"github.com/disgoorg/disgo/discord"
-	"github.com/disgoorg/snowflake/v2"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
-func getCountry(userID snowflake.ID, hintType HintType) (discord.Embed, []discord.InteractiveComponent) {
+func getCountry(user discord.User, hintType HintType) (discord.Embed, []discord.InteractiveComponent) {
 	keys := reflect.ValueOf(data.CountryMap).MapKeys()
 	cca := keys[rand.Intn(len(keys))].String()
 	country := data.CountryMap[cca]
+	userID := user.ID
 	embedBuilder := discord.NewEmbedBuilder()
 	embedBuilder.SetTitle("Guess the flag!")
 	embedBuilder.SetDescriptionf("Game of <@%d>", userID)
 	embedBuilder.SetColor(0xFFFFFF)
 	embedBuilder.SetImage(country.Flags.Png)
+	embedBuilder.SetThumbnail(user.EffectiveAvatarURL())
 	embedBuilder.SetFooterText("Country data provided by restcountries.com")
 	return embedBuilder.Build(), GetGuessButtons(userID, cca, hintType, false)
 }
 
-func GetCountryCreate(userID snowflake.ID, hintType HintType) discord.MessageCreate {
-	embed, buttons := getCountry(userID, hintType)
+func GetCountryCreate(user discord.User, hintType HintType) discord.MessageCreate {
+	embed, buttons := getCountry(user, hintType)
 	return discord.NewMessageCreateBuilder().
 		SetEmbeds(embed).
 		AddActionRow(buttons...).
 		Build()
 }
 
-func GetCountryUpdate(userID snowflake.ID, hintType HintType) discord.MessageUpdate {
-	embed, buttons := getCountry(userID, hintType)
+func GetCountryUpdate(user discord.User, hintType HintType) discord.MessageUpdate {
+	embed, buttons := getCountry(user, hintType)
 	return discord.NewMessageUpdateBuilder().
 		SetEmbeds(embed).
 		AddActionRow(buttons...).
