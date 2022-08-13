@@ -94,6 +94,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 			SetCustomID(cca).
 			SetTitle("Guess the flag!").
 			AddActionRow(discord.NewShortTextInput("name", "Country name").
+				WithPlaceholder("This field is case-insensitive.").
 				WithRequired(true)).
 			Build())
 		if err != nil {
