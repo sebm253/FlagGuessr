@@ -12,7 +12,7 @@ import (
 	"golang.org/x/text/message"
 )
 
-func getCountry(user discord.User, hintType HintType) (discord.Embed, []discord.InteractiveComponent) {
+func GetCountryCreate(user discord.User, hintType HintType) discord.MessageCreate {
 	keys := maps.Keys(data.CountryMap)
 	cca := keys[rand.Intn(len(keys))]
 	country := data.CountryMap[cca]
@@ -24,22 +24,9 @@ func getCountry(user discord.User, hintType HintType) (discord.Embed, []discord.
 	embedBuilder.SetImage(country.Flags.Png)
 	embedBuilder.SetThumbnail(user.EffectiveAvatarURL())
 	embedBuilder.SetFooterText("Country data provided by restcountries.com")
-	return embedBuilder.Build(), GetGuessButtons(userID, cca, hintType, false)
-}
-
-func GetCountryCreate(user discord.User, hintType HintType) discord.MessageCreate {
-	embed, buttons := getCountry(user, hintType)
 	return discord.NewMessageCreateBuilder().
-		SetEmbeds(embed).
-		AddActionRow(buttons...).
-		Build()
-}
-
-func GetCountryUpdate(user discord.User, hintType HintType) discord.MessageUpdate {
-	embed, buttons := getCountry(user, hintType)
-	return discord.NewMessageUpdateBuilder().
-		SetEmbeds(embed).
-		AddActionRow(buttons...).
+		SetEmbeds(embedBuilder.Build()).
+		AddActionRow(GetGuessButtons(userID, cca, hintType, false)...).
 		Build()
 }
 
@@ -48,8 +35,8 @@ func GetCountryInfo(country data.Country) string {
 	population := fmt.Sprintf("Population: %s\n", FormatPopulation(country))
 	capital := fmt.Sprintf("Capital(s): **%s**\n", Ternary(len(capitals) == 0, "None", strings.Join(capitals, ", ")))
 	tld := fmt.Sprintf("Top Level Domain(s): **%s**\n", strings.Join(country.Tlds, ", "))
-	maps := fmt.Sprintf("Google Maps: **<%s>**\n", country.Maps.GoogleMaps)
-	return "\n\n" + population + capital + tld + maps
+	gMaps := fmt.Sprintf("Google Maps: **<%s>**\n", country.Maps.GoogleMaps)
+	return "\n\n" + population + capital + tld + gMaps
 }
 
 func FormatPopulation(country data.Country) string {
