@@ -6,14 +6,12 @@ import (
 	"github.com/disgoorg/log"
 )
 
-func SendFollowup(interaction discord.BaseInteraction, client rest.Rest, content string, ephemeral bool, buttons ...discord.InteractiveComponent) error {
-	messageBuilder := discord.NewMessageCreateBuilder()
-	messageBuilder.SetContent(content)
-	messageBuilder.SetEphemeral(ephemeral)
-	if len(buttons) != 0 {
-		messageBuilder.AddActionRow(buttons...)
-	}
-	_, err := client.CreateFollowupMessage(interaction.ApplicationID(), interaction.Token(), messageBuilder.Build())
+func SendFollowup(interaction discord.BaseInteraction, client rest.Rest, content string) error {
+	_, err := client.CreateFollowupMessage(interaction.ApplicationID(), interaction.Token(),
+		discord.NewMessageCreateBuilder().
+			SetContent(content).
+			SetEphemeral(true).
+			Build())
 	return err
 }
 
@@ -38,7 +36,7 @@ func SendNewCountryMessages(data NewCountryData) {
 	if err != nil {
 		log.Error("there was an error while creating new country message: ", err)
 	}
-	err = SendFollowup(interaction, client, data.FollowupContent, true)
+	err = SendFollowup(interaction, client, data.FollowupContent)
 	if err != nil {
 		log.Error("there was an error while creating new country info message: ", err)
 	}

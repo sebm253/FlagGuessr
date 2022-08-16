@@ -138,7 +138,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 		if err != nil {
 			log.Error("there was an error while updating message after hint usage: ", err)
 		}
-		err = util.SendFollowup(event, client, hint, true, util.GetDeleteButton(userID, cca))
+		err = util.SendFollowup(event, client, hint)
 		if err != nil {
 			log.Error("there was an error while creating hint message: ", err)
 		}
