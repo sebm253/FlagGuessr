@@ -54,7 +54,7 @@ func main() {
 
 func onCommand(event *events.ApplicationCommandInteractionCreate) {
 	if event.Data.CommandName() == "flag" {
-		_ = event.CreateMessage(util.GetCountryCreate(event.User(), util.HintType(0), 0))
+		_ = event.CreateMessage(util.GetCountryCreate(event.User(), 0))
 	}
 }
 
@@ -125,16 +125,15 @@ func onButton(event *events.ComponentInteractionCreate) {
 		i, _ := strconv.Atoi(split[4])
 		hintType := util.HintType(i)
 		var hint string
-		lastHint := hintType == util.Capitals
 		if hintType == util.Population {
 			hint = fmt.Sprintf("The population of this country is %s.", util.FormatPopulation(country))
 		} else if hintType == util.Tlds {
 			hint = fmt.Sprintf("The Top Level Domains of this country are **%s**.", strings.Join(country.Tlds, ", "))
-		} else if lastHint {
+		} else if hintType == util.Capitals {
 			hint = fmt.Sprintf("The capitals of this country are **%s**.", strings.Join(country.Capitals, ", "))
 		}
 		err := event.UpdateMessage(messageUpdateBuilder.
-			AddActionRow(util.GetGuessButtons(userID, cca, streak, hintType+1, lastHint)...).
+			AddActionRow(util.GetGuessButtons(userID, cca, streak, hintType+1)...).
 			Build())
 		if err != nil {
 			log.Error("there was an error while updating message after hint usage: ", err)

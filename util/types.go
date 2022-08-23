@@ -21,6 +21,7 @@ const (
 	Population HintType = iota
 	Tlds
 	Capitals
+	Unknown
 )
 
 type NewCountryData struct {

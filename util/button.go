@@ -12,7 +12,7 @@ var (
 	hintButtonTemplate = buttonTemplate + "-%d"
 )
 
-func GetGuessButtons(userID snowflake.ID, cca string, streak int, hintType HintType, hintDisabled bool) []discord.InteractiveComponent {
+func GetGuessButtons(userID snowflake.ID, cca string, streak int, hintType HintType) []discord.InteractiveComponent {
 	guessButton := discord.NewPrimaryButton("Guess", fmt.Sprintf(buttonTemplate, Guess, userID, cca, streak)).
 		WithEmoji(discord.ComponentEmoji{
 			Name: "🍀",
@@ -25,7 +25,7 @@ func GetGuessButtons(userID snowflake.ID, cca string, streak int, hintType HintT
 		WithEmoji(discord.ComponentEmoji{
 			Name: "❓",
 		}).
-		WithDisabled(hintDisabled)
+		WithDisabled(hintType == Unknown)
 	deleteButton := discord.NewDangerButton("Delete", fmt.Sprintf(buttonTemplate, Delete, userID, cca, streak)).
 		WithEmoji(discord.ComponentEmoji{
 			Name: "🗑",

@@ -37,7 +37,7 @@ func SendNewCountryMessages(data NewCountryData) {
 	if err != nil {
 		log.Error("there was an error while updating original message: ", err)
 	}
-	_, err = client.CreateFollowupMessage(interaction.ApplicationID(), token, GetCountryCreate(user, HintType(0), data.Streak))
+	_, err = client.CreateFollowupMessage(interaction.ApplicationID(), token, GetCountryCreate(user, data.Streak))
 	if err != nil {
 		log.Error("there was an error while creating new country message: ", err)
 	}
