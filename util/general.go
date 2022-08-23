@@ -28,7 +28,7 @@ func SendNewCountryMessages(data NewCountryData) {
 		Type: discord.InteractionResponseTypeUpdateMessage,
 		Data: discord.NewMessageUpdateBuilder().
 			SetEmbeds(embedBuilder.Build()).
-			AddActionRow(discord.NewSecondaryButton("See country details", fmt.Sprintf(buttonTemplate, Details, userID, data.Cca)).
+			AddActionRow(discord.NewSecondaryButton("See country details", fmt.Sprintf(buttonTemplate, Details, userID, data.Cca, 0)).
 				WithEmoji(discord.ComponentEmoji{
 					Name: "🗺",
 				})).
@@ -37,7 +37,7 @@ func SendNewCountryMessages(data NewCountryData) {
 	if err != nil {
 		log.Error("there was an error while updating original message: ", err)
 	}
-	_, err = client.CreateFollowupMessage(interaction.ApplicationID(), token, GetCountryCreate(user, HintType(0)))
+	_, err = client.CreateFollowupMessage(interaction.ApplicationID(), token, GetCountryCreate(user, HintType(0), data.Streak))
 	if err != nil {
 		log.Error("there was an error while creating new country message: ", err)
 	}

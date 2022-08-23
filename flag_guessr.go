@@ -54,7 +54,7 @@ func main() {
 
 func onCommand(event *events.ApplicationCommandInteractionCreate) {
 	if event.Data.CommandName() == "flag" {
-		_ = event.CreateMessage(util.GetCountryCreate(event.User(), util.HintType(0)))
+		_ = event.CreateMessage(util.GetCountryCreate(event.User(), util.HintType(0), 0))
 	}
 }
 
@@ -88,10 +88,11 @@ func onButton(event *events.ComponentInteractionCreate) {
 		}
 		return
 	}
+	streak, _ := strconv.Atoi(split[3])
 	client := event.Client().Rest()
 	if action == util.Guess {
 		err := event.CreateModal(discord.NewModalCreateBuilder().
-			SetCustomID(cca).
+			SetCustomID(fmt.Sprintf("%s-%d", cca, streak)).
 			SetTitle("Guess the country!").
 			AddActionRow(discord.NewShortTextInput("name", "Country name").
 				WithPlaceholder("This field is case-insensitive.").
@@ -121,7 +122,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 		}
 	} else if action == util.Hint {
 		messageUpdateBuilder := discord.NewMessageUpdateBuilder()
-		i, _ := strconv.Atoi(split[3])
+		i, _ := strconv.Atoi(split[4])
 		hintType := util.HintType(i)
 		var hint string
 		lastHint := hintType == util.Capitals
@@ -133,7 +134,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 			hint = fmt.Sprintf("The capitals of this country are **%s**.", strings.Join(country.Capitals, ", "))
 		}
 		err := event.UpdateMessage(messageUpdateBuilder.
-			AddActionRow(util.GetGuessButtons(userID, cca, hintType+1, lastHint)...).
+			AddActionRow(util.GetGuessButtons(userID, cca, streak, hintType+1, lastHint)...).
 			Build())
 		if err != nil {
 			log.Error("there was an error while updating message after hint usage: ", err)
@@ -148,13 +149,16 @@ func onButton(event *events.ComponentInteractionCreate) {
 func onModal(event *events.ModalSubmitInteractionCreate) {
 	evData := event.Data
 	lower := strings.TrimSpace(strings.ToLower(evData.Text("name")))
-	cca := evData.CustomID
+	id := evData.CustomID
+	split := strings.Split(id, "-")
+	cca := split[0]
 	country := data.CountryMap[cca]
 	name := country.Name
 	common := name.Common
 	var err error
 	if lower == strings.ToLower(common) || lower == strings.ToLower(name.Official) {
 		flag := country.Flag
+		streak, _ := strconv.Atoi(split[1])
 		embedBuilder := discord.NewEmbedBuilder()
 		embedBuilder.SetTitle("You got the country right!")
 		embedBuilder.SetDescriptionf("It was **%s**. %s", common, flag)
@@ -164,6 +168,7 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 			User:            event.User(),
 			EmbedBuilder:    *embedBuilder,
 			FollowupContent: fmt.Sprintf("Your guess was correct! It was **%s**. %s", common, flag),
+			Streak:          streak + 1,
 			Cca:             cca,
 			Client:          event.Client().Rest(),
 		})

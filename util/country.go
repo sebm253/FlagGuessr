@@ -12,21 +12,21 @@ import (
 	"golang.org/x/text/message"
 )
 
-func GetCountryCreate(user discord.User, hintType HintType) discord.MessageCreate {
+func GetCountryCreate(user discord.User, hintType HintType, streak int) discord.MessageCreate {
 	keys := maps.Keys(data.CountryMap)
 	cca := keys[rand.Intn(len(keys))]
 	country := data.CountryMap[cca]
 	userID := user.ID
 	embedBuilder := discord.NewEmbedBuilder()
 	embedBuilder.SetTitle("Guess the country!")
-	embedBuilder.SetDescriptionf("Game of <@%d>", userID)
+	embedBuilder.SetDescriptionf("Game of <@%d>\n\nStreak: **%d**", userID, streak)
 	embedBuilder.SetColor(0xFFFFFF)
 	embedBuilder.SetImage(country.Flags.Png)
 	embedBuilder.SetThumbnail(user.EffectiveAvatarURL())
 	embedBuilder.SetFooterText("Country data provided by restcountries.com")
 	return discord.NewMessageCreateBuilder().
 		SetEmbeds(embedBuilder.Build()).
-		AddActionRow(GetGuessButtons(userID, cca, hintType, false)...).
+		AddActionRow(GetGuessButtons(userID, cca, streak, hintType, false)...).
 		Build()
 }
 

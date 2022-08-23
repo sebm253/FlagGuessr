@@ -28,6 +28,7 @@ type NewCountryData struct {
 	User            discord.User
 	EmbedBuilder    discord.EmbedBuilder
 	FollowupContent string
+	Streak          int
 	Cca             string
 	Client          rest.Rest
 }
