@@ -32,10 +32,3 @@ func GetGuessButtons(userID snowflake.ID, cca string, hintType HintType, hintDis
 		})
 	return []discord.InteractiveComponent{guessButton, newCountryButton, hintButton, deleteButton}
 }
-
-func GetDetailsButton(userID snowflake.ID, cca string) discord.InteractiveComponent {
-	return discord.NewSecondaryButton("See country details", fmt.Sprintf(buttonTemplate, Details, userID, cca)).
-		WithEmoji(discord.ComponentEmoji{
-			Name: "🗺",
-		})
-}

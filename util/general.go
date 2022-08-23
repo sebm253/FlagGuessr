@@ -1,6 +1,8 @@
 package util
 
 import (
+	"fmt"
+
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/rest"
 	"github.com/disgoorg/log"
@@ -26,7 +28,10 @@ func SendNewCountryMessages(data NewCountryData) {
 		Type: discord.InteractionResponseTypeUpdateMessage,
 		Data: discord.NewMessageUpdateBuilder().
 			SetEmbeds(embedBuilder.Build()).
-			AddActionRow(GetDetailsButton(userID, data.Cca)).
+			AddActionRow(discord.NewSecondaryButton("See country details", fmt.Sprintf(buttonTemplate, Details, userID, data.Cca)).
+				WithEmoji(discord.ComponentEmoji{
+					Name: "🗺",
+				})).
 			Build(),
 	})
 	if err != nil {
