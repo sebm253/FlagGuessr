@@ -32,9 +32,10 @@ func GetCountryCreate(user discord.User, streak int) discord.MessageCreate {
 
 func GetCountryInfo(country data.Country) string {
 	capitals := country.Capitals
+	tlds := country.Tlds
 	population := fmt.Sprintf("Population: %s\n", FormatPopulation(country))
 	capital := fmt.Sprintf("Capital(s): **%s**\n", Ternary(len(capitals) == 0, "None", strings.Join(capitals, ", ")))
-	tld := fmt.Sprintf("Top Level Domain(s): **%s**\n", strings.Join(country.Tlds, ", "))
+	tld := fmt.Sprintf("Top Level Domain(s): **%s**\n", Ternary(len(tlds) == 0, "None", strings.Join(tlds, ", ")))
 	gMaps := fmt.Sprintf("Google Maps: **<%s>**\n", country.Maps.GoogleMaps)
 	return "\n\n" + population + capital + tld + gMaps
 }

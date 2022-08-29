@@ -128,7 +128,12 @@ func onButton(event *events.ComponentInteractionCreate) {
 		if hintType == util.Population {
 			hint = fmt.Sprintf("The population of this country is %s.", util.FormatPopulation(country))
 		} else if hintType == util.Tlds {
-			hint = fmt.Sprintf("The Top Level Domains of this country are **%s**.", strings.Join(country.Tlds, ", "))
+			tlds := country.Tlds
+			if len(tlds) == 0 {
+				hint = "This country has no Top Level Domains."
+			} else {
+				hint = fmt.Sprintf("The Top Level Domains of this country are **%s**.", strings.Join(tlds, ", "))
+			}
 		} else if hintType == util.Capitals {
 			hint = fmt.Sprintf("The capitals of this country are **%s**.", strings.Join(country.Capitals, ", "))
 		}
