@@ -159,7 +159,6 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 	country := data.CountryMap[cca]
 	name := country.Name
 	common := name.Common
-	var err error
 	if lower == strings.ToLower(common) || lower == strings.ToLower(name.Official) {
 		flag := country.Flag
 		streak, _ := strconv.Atoi(split[1])
@@ -177,12 +176,12 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 			Client:          event.Client().Rest(),
 		})
 	} else {
-		err = event.CreateMessage(discord.NewMessageCreateBuilder().
+		err := event.CreateMessage(discord.NewMessageCreateBuilder().
 			SetContent("Your guess was incorrect. Please try again.").
 			SetEphemeral(true).
 			Build())
-	}
-	if err != nil {
-		log.Error("there was an error while creating a followup: ", err)
+		if err != nil {
+			log.Error("there was an error while creating a followup: ", err)
+		}
 	}
 }
