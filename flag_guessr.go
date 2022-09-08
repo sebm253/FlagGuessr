@@ -29,7 +29,7 @@ func main() {
 
 	client, err := disgo.New(os.Getenv("FLAG_GUESSR_TOKEN"),
 		bot.WithGatewayConfigOpts(gateway.WithIntents(gateway.IntentsNone),
-			gateway.WithPresence(gateway.NewWatchingPresence("your guesses", discord.OnlineStatusOnline, false))),
+			gateway.WithPresenceOpts(gateway.WithWatchingActivity("your guesses"))),
 		bot.WithCacheConfigOpts(cache.WithCacheFlags(cache.FlagsNone)),
 		bot.WithEventListeners(&events.ListenerAdapter{
 			OnApplicationCommandInteraction: onCommand,
