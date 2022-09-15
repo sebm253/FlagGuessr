@@ -3,7 +3,7 @@ module flag-guessr
 go 1.19
 
 require (
-	github.com/disgoorg/disgo v0.13.19
+	github.com/disgoorg/disgo v0.13.20
 	github.com/disgoorg/log v1.2.0
 	github.com/disgoorg/snowflake/v2 v2.0.0
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
