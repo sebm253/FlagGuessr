@@ -90,7 +90,8 @@ func onButton(event *events.ComponentInteractionCreate) {
 	}
 	streak, _ := strconv.Atoi(split[3])
 	client := event.Client().Rest()
-	if action == util.Guess {
+	switch action {
+	case util.Guess:
 		err := event.CreateModal(discord.NewModalCreateBuilder().
 			SetCustomID(fmt.Sprintf("%s-%d", cca, streak)).
 			SetTitle("Guess the country!").
@@ -101,7 +102,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 		if err != nil {
 			log.Error("there was an error while creating modal: ", err)
 		}
-	} else if action == util.NewCountry {
+	case util.NewCountry:
 		flag := country.Flag
 		embedBuilder := discord.NewEmbedBuilder()
 		embedBuilder.SetTitle("You skipped a country.")
@@ -115,29 +116,29 @@ func onButton(event *events.ComponentInteractionCreate) {
 			Cca:             cca,
 			Client:          client,
 		})
-	} else if action == util.Delete {
+	case util.Delete:
 		err := client.DeleteMessage(event.ChannelID(), event.Message.ID)
 		if err != nil {
 			log.Error("there was an error while deleting message: ", err)
 		}
-	} else if action == util.Hint {
-		messageUpdateBuilder := discord.NewMessageUpdateBuilder()
+	case util.Hint:
 		i, _ := strconv.Atoi(split[4])
 		hintType := util.HintType(i)
 		var hint string
-		if hintType == util.Population {
+		switch hintType {
+		case util.Population:
 			hint = fmt.Sprintf("The population of this country is %s.", util.FormatPopulation(country))
-		} else if hintType == util.Tlds {
+		case util.Tlds:
 			tlds := country.Tlds
 			if len(tlds) == 0 {
 				hint = "This country has no Top Level Domains."
 			} else {
 				hint = fmt.Sprintf("The Top Level Domains of this country are **%s**.", strings.Join(tlds, ", "))
 			}
-		} else if hintType == util.Capitals {
+		case util.Capitals:
 			hint = fmt.Sprintf("The capitals of this country are **%s**.", strings.Join(country.Capitals, ", "))
 		}
-		err := event.UpdateMessage(messageUpdateBuilder.
+		err := event.UpdateMessage(discord.NewMessageUpdateBuilder().
 			AddActionRow(util.GetGuessButtons(userID, cca, streak, hintType+1)...).
 			Build())
 		if err != nil {
