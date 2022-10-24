@@ -136,7 +136,12 @@ func onButton(event *events.ComponentInteractionCreate) {
 				hint = fmt.Sprintf("The Top Level Domains of this country are **%s**.", strings.Join(tlds, ", "))
 			}
 		case util.Capitals:
-			hint = fmt.Sprintf("The capitals of this country are **%s**.", strings.Join(country.Capitals, ", "))
+			capitals := country.Capitals
+			if len(capitals) == 0 {
+				hint = "This country has no capitals."
+			} else {
+				hint = fmt.Sprintf("The capitals of this country are **%s**.", strings.Join(capitals, ", "))
+			}
 		}
 		err := event.UpdateMessage(discord.NewMessageUpdateBuilder().
 			AddActionRow(util.GetGuessButtons(userID, cca, streak, hintType+1)...).
