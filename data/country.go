@@ -7,7 +7,7 @@ type Country struct {
 	} `json:"name"`
 	Tlds     []string `json:"tld,omitempty"`
 	Cca2     string   `json:"cca2"`
-	Capitals []string `json:"capital,omitempty"`
+	Capitols []string `json:"capital,omitempty"`
 	Flag     string   `json:"flag"`
 	Maps     struct {
 		GoogleMaps string `json:"googleMaps"`

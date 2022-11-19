@@ -20,7 +20,7 @@ type HintType int
 const (
 	Population HintType = iota
 	Tlds
-	Capitals
+	Capitols
 	Unknown
 )
 
