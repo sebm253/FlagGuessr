@@ -1,10 +1,10 @@
 package data
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 
-	"github.com/disgoorg/disgo/json"
 	"github.com/disgoorg/log"
 )
 
