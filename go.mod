@@ -7,7 +7,7 @@ require (
 	github.com/disgoorg/log v1.2.0
 	github.com/disgoorg/snowflake/v2 v2.0.1
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
-	golang.org/x/text v0.4.0
+	golang.org/x/text v0.5.0
 )
 
 require (
