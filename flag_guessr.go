@@ -56,7 +56,11 @@ func onCommand(event *events.ApplicationCommandInteractionCreate) {
 	interactionData := event.SlashCommandInteractionData()
 	if interactionData.CommandName() == "flag" {
 		difficulty := interactionData.Int("difficulty")
-		_ = event.CreateMessage(util.GetCountryCreate(event.User(), util.GameDifficulty(difficulty), 0))
+		_ = event.CreateMessage(util.GetCountryCreate(util.GameStartData{
+			User:          event.User(),
+			Difficulty:    util.GameDifficulty(difficulty),
+			MinPopulation: interactionData.Int("min-population"),
+		}))
 	}
 }
 
@@ -66,8 +70,8 @@ func onButton(event *events.ComponentInteractionCreate) {
 	_ = json.Unmarshal([]byte(buttonID), &stateData)
 
 	actionType := stateData.ActionType
-	countryCca := stateData.Cca
-	country := data.CountryMap[countryCca]
+	countryIndex := stateData.SliceIndex
+	country := data.CountrySlice[countryIndex]
 	countryCommonName := country.Name.Common
 	messageBuilder := discord.NewMessageCreateBuilder()
 	if actionType == util.ActionTypeDetails {
@@ -95,9 +99,10 @@ func onButton(event *events.ComponentInteractionCreate) {
 	switch actionType {
 	case util.ActionTypeGuess:
 		marshalledData, _ := json.Marshal(util.ModalStateData{
-			Difficulty: stateData.Difficulty,
-			Cca:        countryCca,
-			Streak:     stateData.Streak,
+			Difficulty:    stateData.Difficulty,
+			MinPopulation: stateData.MinPopulation,
+			SliceIndex:    countryIndex,
+			Streak:        stateData.Streak,
 		})
 		err := event.CreateModal(discord.NewModalCreateBuilder().
 			SetCustomID(string(marshalledData)).
@@ -115,7 +120,8 @@ func onButton(event *events.ComponentInteractionCreate) {
 			User:            user,
 			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", countryCommonName, country.Flag),
 			Difficulty:      stateData.Difficulty,
-			Cca:             countryCca,
+			MinPopulation:   stateData.MinPopulation,
+			SliceIndex:      countryIndex,
 			Client:          client,
 		})
 	case util.ActionTypeDelete:
@@ -170,19 +176,20 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 	_ = json.Unmarshal([]byte(modalID), &stateData)
 
 	difficulty := stateData.Difficulty
-	countryCca := stateData.Cca
+	countryIndex := stateData.SliceIndex
 	countryInput := eventData.Text("input")
 	countryInputLow := strings.TrimSpace(strings.ToLower(countryInput))
-	country := data.CountryMap[countryCca]
+	country := data.CountrySlice[countryIndex]
 	countryName := country.Name
 	countryCommonName := countryName.Common
 	streak := stateData.Streak
 	newCountryData := util.NewCountryData{
-		Interaction: event,
-		User:        event.User(),
-		Difficulty:  difficulty,
-		Cca:         countryCca,
-		Client:      event.Client().Rest(),
+		Interaction:   event,
+		User:          event.User(),
+		Difficulty:    difficulty,
+		MinPopulation: stateData.MinPopulation,
+		SliceIndex:    countryIndex,
+		Client:        event.Client().Rest(),
 	}
 	if countryInputLow == strings.ToLower(countryCommonName) || countryInputLow == strings.ToLower(countryName.Official) {
 		newCountryData.FollowupContent = fmt.Sprintf("Your guess was **correct**! It was **%s**. %s", countryCommonName, country.Flag)

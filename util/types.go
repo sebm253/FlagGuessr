@@ -30,19 +30,20 @@ type NewCountryData struct {
 	User            discord.User
 	FollowupContent string
 	Difficulty      GameDifficulty
-	Ephemeral       bool
+	MinPopulation   int
 	Streak          int
-	Cca             string
+	SliceIndex      int
 	Client          rest.Rest
 }
 
 type ButtonStateData struct {
-	UserID     snowflake.ID   `json:"u"`
-	Difficulty GameDifficulty `json:"d"`
-	Cca        string         `json:"c"`
-	Streak     int            `json:"s"`
-	ActionType ActionType     `json:"a"`
-	HintType   HintType       `json:"h"`
+	UserID        snowflake.ID   `json:"u"`
+	Difficulty    GameDifficulty `json:"d"`
+	MinPopulation int            `json:"m"`
+	SliceIndex    int            `json:"i"`
+	Streak        int            `json:"s"`
+	ActionType    ActionType     `json:"a"`
+	HintType      HintType       `json:"h"`
 }
 
 type GameDifficulty int
@@ -53,7 +54,15 @@ const (
 )
 
 type ModalStateData struct {
-	Difficulty GameDifficulty `json:"d"`
-	Cca        string         `json:"c"`
-	Streak     int            `json:"s"`
+	Difficulty    GameDifficulty `json:"d"`
+	MinPopulation int            `json:"m"`
+	SliceIndex    int            `json:"i"`
+	Streak        int            `json:"s"`
+}
+
+type GameStartData struct {
+	User          discord.User
+	Difficulty    GameDifficulty
+	MinPopulation int
+	Streak        int
 }

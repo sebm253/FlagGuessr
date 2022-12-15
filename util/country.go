@@ -7,19 +7,19 @@ import (
 
 	"flag-guessr/data"
 	"github.com/disgoorg/disgo/discord"
-	"golang.org/x/exp/maps"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
-func GetCountryCreate(user discord.User, difficulty GameDifficulty, streak int) discord.MessageCreate {
-	keys := maps.Keys(data.CountryMap)
-	countryCca := keys[rand.Intn(len(keys))]
-	country := data.CountryMap[countryCca]
+func GetCountryCreate(startData GameStartData) discord.MessageCreate {
+	user := startData.User
 	userID := user.ID
+	streak := startData.Streak
+	minPopulation := startData.MinPopulation
+	countryIndex, country := getRandomCountry(minPopulation)
 	embedBuilder := discord.NewEmbedBuilder()
 	embedBuilder.SetTitle("Guess the country!")
-	embedBuilder.SetDescriptionf("Game of <@%d>\n\nStreak: **%d**", userID, streak)
+	embedBuilder.SetDescriptionf("Game of <@%d>\n\nMinimum population: %s\nStreak: **%d**", userID, formatRawPopulation(minPopulation), streak)
 	embedBuilder.SetColor(0xFFFFFF)
 	embedBuilder.SetImage(country.Flags.Png)
 	embedBuilder.SetThumbnail(user.EffectiveAvatarURL())
@@ -27,10 +27,11 @@ func GetCountryCreate(user discord.User, difficulty GameDifficulty, streak int) 
 	return discord.NewMessageCreateBuilder().
 		SetEmbeds(embedBuilder.Build()).
 		AddActionRow(GetGuessButtons(ButtonStateData{
-			UserID:     userID,
-			Difficulty: difficulty,
-			Cca:        countryCca,
-			Streak:     streak,
+			UserID:        userID,
+			Difficulty:    startData.Difficulty,
+			MinPopulation: minPopulation,
+			SliceIndex:    countryIndex,
+			Streak:        streak,
 		})...).
 		Build()
 }
@@ -46,6 +47,15 @@ func GetCountryInfo(country data.Country) string {
 }
 
 func FormatPopulation(country data.Country) string {
+	return formatRawPopulation(country.Population)
+}
+
+func getRandomCountry(minPopulation int) (int, data.Country) {
+	i := rand.Intn(data.IndexBoundaries[minPopulation])
+	return i, data.CountrySlice[i]
+}
+
+func formatRawPopulation(population int) string {
 	p := message.NewPrinter(language.AmericanEnglish)
-	return p.Sprintf("**%d**", country.Population)
+	return p.Sprintf("**%d**", population)
 }

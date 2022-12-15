@@ -13,14 +13,19 @@ func SendGameUpdates(data NewCountryData) {
 	user := data.User
 	err := client.CreateInteractionResponse(interaction.ID(), token, discord.InteractionResponse{
 		Type: discord.InteractionResponseTypeUpdateMessage,
-		Data: GetCountryCreate(user, data.Difficulty, data.Streak),
+		Data: GetCountryCreate(GameStartData{
+			User:          user,
+			Difficulty:    data.Difficulty,
+			MinPopulation: data.MinPopulation,
+			Streak:        data.Streak,
+		}),
 	})
 	if err != nil {
 		log.Error("there was an error while creating new country message: ", err)
 	}
 	stateData, _ := json.Marshal(&ButtonStateData{
 		UserID:     user.ID,
-		Cca:        data.Cca,
+		SliceIndex: data.SliceIndex,
 		ActionType: ActionTypeDetails,
 	})
 	_, err = client.CreateFollowupMessage(interaction.ApplicationID(), token, discord.NewMessageCreateBuilder().
