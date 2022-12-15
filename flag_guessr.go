@@ -103,24 +103,13 @@ func onButton(event *events.ComponentInteractionCreate) {
 			log.Error("there was an error while creating modal: ", err)
 		}
 	case util.NewCountry:
-		flag := country.Flag
-		embedBuilder := discord.NewEmbedBuilder()
-		embedBuilder.SetTitle("You skipped a country.")
-		embedBuilder.SetDescriptionf("It was **%s**. %s", name, flag)
-		embedBuilder.SetColor(0x5386c9)
 		util.SendNewCountryMessages(util.NewCountryData{
 			Interaction:     event,
 			User:            user,
-			EmbedBuilder:    *embedBuilder,
-			FollowupContent: fmt.Sprintf("The country was **%s**. %s", name, flag),
+			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", name, country.Flag),
 			Cca:             cca,
 			Client:          client,
 		})
-	case util.Delete:
-		err := client.DeleteMessage(event.ChannelID(), event.Message.ID)
-		if err != nil {
-			log.Error("there was an error while deleting message: ", err)
-		}
 	case util.Hint:
 		i, _ := strconv.Atoi(split[4])
 		hintType := util.HintType(i)
@@ -149,7 +138,11 @@ func onButton(event *events.ComponentInteractionCreate) {
 		if err != nil {
 			log.Error("there was an error while updating message after hint usage: ", err)
 		}
-		err = util.SendFollowup(event, client, hint)
+		_, err = client.CreateFollowupMessage(event.ApplicationID(), event.Token(),
+			discord.NewMessageCreateBuilder().
+				SetContent(hint).
+				SetEphemeral(true).
+				Build())
 		if err != nil {
 			log.Error("there was an error while creating hint message: ", err)
 		}
@@ -166,24 +159,18 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 	name := country.Name
 	common := name.Common
 	if lower == strings.ToLower(common) || lower == strings.ToLower(name.Official) {
-		flag := country.Flag
 		streak, _ := strconv.Atoi(split[1])
-		embedBuilder := discord.NewEmbedBuilder()
-		embedBuilder.SetTitle("You got the country right!")
-		embedBuilder.SetDescriptionf("It was **%s**. %s", common, flag)
-		embedBuilder.SetColor(0x4dbf36)
 		util.SendNewCountryMessages(util.NewCountryData{
 			Interaction:     event,
 			User:            event.User(),
-			EmbedBuilder:    *embedBuilder,
-			FollowupContent: fmt.Sprintf("Your guess was correct! It was **%s**. %s", common, flag),
+			FollowupContent: fmt.Sprintf("Your guess was **correct**! It was **%s**. %s", common, country.Flag),
 			Streak:          streak + 1,
 			Cca:             cca,
 			Client:          event.Client().Rest(),
 		})
 	} else {
 		err := event.CreateMessage(discord.NewMessageCreateBuilder().
-			SetContent("Your guess was incorrect. Please try again.").
+			SetContent("Your guess was **incorrect**. Please try again.").
 			SetEphemeral(true).
 			Build())
 		if err != nil {

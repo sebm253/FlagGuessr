@@ -27,6 +27,7 @@ func GetCountryCreate(user discord.User, streak int) discord.MessageCreate {
 	return discord.NewMessageCreateBuilder().
 		SetEmbeds(embedBuilder.Build()).
 		AddActionRow(GetGuessButtons(userID, cca, streak, HintType(0))...).
+		SetEphemeral(true).
 		Build()
 }
 

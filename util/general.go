@@ -4,18 +4,8 @@ import (
 	"fmt"
 
 	"github.com/disgoorg/disgo/discord"
-	"github.com/disgoorg/disgo/rest"
 	"github.com/disgoorg/log"
 )
-
-func SendFollowup(interaction discord.BaseInteraction, client rest.Rest, content string) error {
-	_, err := client.CreateFollowupMessage(interaction.ApplicationID(), interaction.Token(),
-		discord.NewMessageCreateBuilder().
-			SetContent(content).
-			SetEphemeral(true).
-			Build())
-	return err
-}
 
 func SendNewCountryMessages(data NewCountryData) {
 	client := data.Client
@@ -24,22 +14,19 @@ func SendNewCountryMessages(data NewCountryData) {
 	user := data.User
 	err := client.CreateInteractionResponse(interaction.ID(), token, discord.InteractionResponse{
 		Type: discord.InteractionResponseTypeUpdateMessage,
-		Data: discord.NewMessageUpdateBuilder().
-			SetEmbeds(data.EmbedBuilder.Build()).
-			AddActionRow(discord.NewSecondaryButton("See country details", fmt.Sprintf(buttonTemplate, Details, user.ID, data.Cca, 0)).
-				WithEmoji(discord.ComponentEmoji{
-					Name: "🗺",
-				})).
-			Build(),
+		Data: GetCountryCreate(user, data.Streak),
 	})
-	if err != nil {
-		log.Error("there was an error while updating original message: ", err)
-	}
-	_, err = client.CreateFollowupMessage(interaction.ApplicationID(), token, GetCountryCreate(user, data.Streak))
 	if err != nil {
 		log.Error("there was an error while creating new country message: ", err)
 	}
-	err = SendFollowup(interaction, client, data.FollowupContent)
+	_, err = client.CreateFollowupMessage(interaction.ApplicationID(), token, discord.NewMessageCreateBuilder().
+		SetContent(data.FollowupContent).
+		AddActionRow(discord.NewSecondaryButton("See country details", fmt.Sprintf(buttonTemplate, Details, user.ID, data.Cca, 0)).
+			WithEmoji(discord.ComponentEmoji{
+				Name: "🗺",
+			})).
+		SetEphemeral(true).
+		Build())
 	if err != nil {
 		log.Error("there was an error while creating new country info message: ", err)
 	}

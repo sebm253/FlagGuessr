@@ -26,9 +26,5 @@ func GetGuessButtons(userID snowflake.ID, cca string, streak int, hintType HintT
 			Name: "❓",
 		}).
 		WithDisabled(hintType == Unknown)
-	deleteButton := discord.NewDangerButton("Delete", fmt.Sprintf(buttonTemplate, Delete, userID, cca, streak)).
-		WithEmoji(discord.ComponentEmoji{
-			Name: "🗑",
-		})
-	return []discord.InteractiveComponent{guessButton, newCountryButton, hintButton, deleteButton}
+	return []discord.InteractiveComponent{guessButton, newCountryButton, hintButton}
 }

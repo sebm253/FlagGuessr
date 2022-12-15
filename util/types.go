@@ -11,7 +11,6 @@ const (
 	Guess      Action = "guess"
 	NewCountry Action = "new"
 	Hint       Action = "hint"
-	Delete     Action = "delete"
 	Details    Action = "details"
 )
 
@@ -27,7 +26,6 @@ const (
 type NewCountryData struct {
 	Interaction     discord.BaseInteraction
 	User            discord.User
-	EmbedBuilder    discord.EmbedBuilder
 	FollowupContent string
 	Streak          int
 	Cca             string
