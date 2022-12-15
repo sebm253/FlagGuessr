@@ -1,8 +1,7 @@
 package util
 
 import (
-	"fmt"
-
+	"encoding/json"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/log"
 )
@@ -14,14 +13,19 @@ func SendNewCountryMessages(data NewCountryData) {
 	user := data.User
 	err := client.CreateInteractionResponse(interaction.ID(), token, discord.InteractionResponse{
 		Type: discord.InteractionResponseTypeUpdateMessage,
-		Data: GetCountryCreate(user, data.Streak),
+		Data: GetCountryCreate(user, data.Difficulty, data.Streak),
 	})
 	if err != nil {
 		log.Error("there was an error while creating new country message: ", err)
 	}
+	stateData, _ := json.Marshal(&ButtonStateData{
+		UserID:     user.ID,
+		Cca:        data.Cca,
+		ActionType: ActionTypeDetails,
+	})
 	_, err = client.CreateFollowupMessage(interaction.ApplicationID(), token, discord.NewMessageCreateBuilder().
 		SetContent(data.FollowupContent).
-		AddActionRow(discord.NewSecondaryButton("See country details", fmt.Sprintf(buttonTemplate, Details, user.ID, data.Cca, 0)).
+		AddActionRow(discord.NewSecondaryButton("See country details", string(stateData)).
 			WithEmoji(discord.ComponentEmoji{
 				Name: "🗺",
 			})).

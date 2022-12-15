@@ -3,31 +3,56 @@ package util
 import (
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/rest"
+	"github.com/disgoorg/snowflake/v2"
 )
 
-type Action string
+type ActionType int
 
 const (
-	Guess      Action = "guess"
-	NewCountry Action = "new"
-	Hint       Action = "hint"
-	Details    Action = "details"
+	ActionTypeGuess ActionType = iota
+	ActionTypeNewCountry
+	ActionTypeHint
+	ActionTypeDetails
 )
 
 type HintType int
 
 const (
-	Population HintType = iota
-	Tlds
-	Capitals
-	Unknown
+	HintTypePopulation HintType = iota
+	HintTypeTlds
+	HintTypeCapitals
+	HintTypeUnknown
 )
 
 type NewCountryData struct {
 	Interaction     discord.BaseInteraction
 	User            discord.User
 	FollowupContent string
+	Difficulty      GameDifficulty
+	Ephemeral       bool
 	Streak          int
 	Cca             string
 	Client          rest.Rest
+}
+
+type ButtonStateData struct {
+	UserID     snowflake.ID   `json:"u"`
+	Difficulty GameDifficulty `json:"d"`
+	Cca        string         `json:"c"`
+	Streak     int            `json:"s"`
+	ActionType ActionType     `json:"a"`
+	HintType   HintType       `json:"h"`
+}
+
+type GameDifficulty int
+
+const (
+	GameDifficultyNormal GameDifficulty = iota
+	GameDifficultyHard
+)
+
+type ModalStateData struct {
+	Difficulty GameDifficulty `json:"d"`
+	Cca        string         `json:"c"`
+	Streak     int            `json:"s"`
 }

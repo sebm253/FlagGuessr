@@ -12,7 +12,7 @@ import (
 	"golang.org/x/text/message"
 )
 
-func GetCountryCreate(user discord.User, streak int) discord.MessageCreate {
+func GetCountryCreate(user discord.User, difficulty GameDifficulty, streak int) discord.MessageCreate {
 	keys := maps.Keys(data.CountryMap)
 	cca := keys[rand.Intn(len(keys))]
 	country := data.CountryMap[cca]
@@ -26,7 +26,12 @@ func GetCountryCreate(user discord.User, streak int) discord.MessageCreate {
 	embedBuilder.SetFooterText("Country data provided by restcountries.com")
 	return discord.NewMessageCreateBuilder().
 		SetEmbeds(embedBuilder.Build()).
-		AddActionRow(GetGuessButtons(userID, cca, streak, HintType(0))...).
+		AddActionRow(GetGuessButtons(ButtonStateData{
+			UserID:     userID,
+			Difficulty: difficulty,
+			Cca:        cca,
+			Streak:     streak,
+		})...).
 		SetEphemeral(true).
 		Build()
 }

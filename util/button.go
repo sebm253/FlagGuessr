@@ -1,30 +1,29 @@
 package util
 
 import (
-	"fmt"
-
+	"encoding/json"
 	"github.com/disgoorg/disgo/discord"
-	"github.com/disgoorg/snowflake/v2"
 )
 
-var (
-	buttonTemplate     = "%s-%d-%s-%d"
-	hintButtonTemplate = buttonTemplate + "-%d"
-)
-
-func GetGuessButtons(userID snowflake.ID, cca string, streak int, hintType HintType) []discord.InteractiveComponent {
-	guessButton := discord.NewPrimaryButton("Submit guess", fmt.Sprintf(buttonTemplate, Guess, userID, cca, streak)).
+func GetGuessButtons(stateData ButtonStateData) []discord.InteractiveComponent {
+	guessButton := discord.NewPrimaryButton("Submit guess", marshalStateData(stateData, ActionTypeGuess)).
 		WithEmoji(discord.ComponentEmoji{
 			Name: "🍀",
 		})
-	newCountryButton := discord.NewSecondaryButton("New country", fmt.Sprintf(buttonTemplate, NewCountry, userID, cca, streak)).
+	newCountryButton := discord.NewSecondaryButton("New country", marshalStateData(stateData, ActionTypeNewCountry)).
 		WithEmoji(discord.ComponentEmoji{
 			Name: "♻",
 		})
-	hintButton := discord.NewSecondaryButton("Hint", fmt.Sprintf(hintButtonTemplate, Hint, userID, cca, streak, hintType)).
+	hintButton := discord.NewSecondaryButton("Hint", marshalStateData(stateData, ActionTypeHint)).
 		WithEmoji(discord.ComponentEmoji{
 			Name: "❓",
 		}).
-		WithDisabled(hintType == Unknown)
+		WithDisabled(stateData.HintType == HintTypeUnknown)
 	return []discord.InteractiveComponent{guessButton, newCountryButton, hintButton}
+}
+
+func marshalStateData(stateData ButtonStateData, actionType ActionType) string {
+	stateData.ActionType = actionType
+	data, _ := json.Marshal(stateData)
+	return string(data)
 }
