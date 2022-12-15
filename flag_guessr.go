@@ -118,6 +118,11 @@ func onButton(event *events.ComponentInteractionCreate) {
 			Cca:             cca,
 			Client:          client,
 		})
+	case util.ActionTypeDelete:
+		err := client.DeleteMessage(event.ChannelID(), event.Message.ID)
+		if err != nil {
+			log.Error("there was an error while deleting message: ", err)
+		}
 	case util.ActionTypeHint:
 		hintType := stateData.HintType
 		var hint string

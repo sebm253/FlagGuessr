@@ -19,7 +19,11 @@ func GetGuessButtons(stateData ButtonStateData) []discord.InteractiveComponent {
 			Name: "❓",
 		}).
 		WithDisabled(stateData.HintType == HintTypeUnknown)
-	return []discord.InteractiveComponent{guessButton, newCountryButton, hintButton}
+	deleteButton := discord.NewDangerButton("Delete", marshalStateData(stateData, ActionTypeDelete)).
+		WithEmoji(discord.ComponentEmoji{
+			Name: "🗑",
+		})
+	return []discord.InteractiveComponent{guessButton, newCountryButton, hintButton, deleteButton}
 }
 
 func marshalStateData(stateData ButtonStateData, actionType ActionType) string {

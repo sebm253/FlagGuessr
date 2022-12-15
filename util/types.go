@@ -12,6 +12,7 @@ const (
 	ActionTypeGuess ActionType = iota
 	ActionTypeNewCountry
 	ActionTypeHint
+	ActionTypeDelete
 	ActionTypeDetails
 )
 

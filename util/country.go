@@ -32,7 +32,6 @@ func GetCountryCreate(user discord.User, difficulty GameDifficulty, streak int) 
 			Cca:        cca,
 			Streak:     streak,
 		})...).
-		SetEphemeral(true).
 		Build()
 }
 
