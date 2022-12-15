@@ -13,7 +13,7 @@ var (
 )
 
 func GetGuessButtons(userID snowflake.ID, cca string, streak int, hintType HintType) []discord.InteractiveComponent {
-	guessButton := discord.NewPrimaryButton("Guess", fmt.Sprintf(buttonTemplate, Guess, userID, cca, streak)).
+	guessButton := discord.NewPrimaryButton("Submit guess", fmt.Sprintf(buttonTemplate, Guess, userID, cca, streak)).
 		WithEmoji(discord.ComponentEmoji{
 			Name: "🍀",
 		})

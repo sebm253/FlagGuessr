@@ -21,14 +21,12 @@ func SendNewCountryMessages(data NewCountryData) {
 	client := data.Client
 	interaction := data.Interaction
 	token := interaction.Token()
-	embedBuilder := data.EmbedBuilder
 	user := data.User
-	userID := user.ID
 	err := client.CreateInteractionResponse(interaction.ID(), token, discord.InteractionResponse{
 		Type: discord.InteractionResponseTypeUpdateMessage,
 		Data: discord.NewMessageUpdateBuilder().
-			SetEmbeds(embedBuilder.Build()).
-			AddActionRow(discord.NewSecondaryButton("See country details", fmt.Sprintf(buttonTemplate, Details, userID, data.Cca, 0)).
+			SetEmbeds(data.EmbedBuilder.Build()).
+			AddActionRow(discord.NewSecondaryButton("See country details", fmt.Sprintf(buttonTemplate, Details, user.ID, data.Cca, 0)).
 				WithEmoji(discord.ComponentEmoji{
 					Name: "🗺",
 				})).
