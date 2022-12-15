@@ -110,7 +110,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 			log.Error("there was an error while creating modal: ", err)
 		}
 	case util.ActionTypeNewCountry:
-		util.SendNewCountryMessages(util.NewCountryData{
+		util.SendGameUpdates(util.NewCountryData{
 			Interaction:     event,
 			User:            user,
 			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", name, country.Flag),
@@ -187,7 +187,7 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 	if countryInputLow == strings.ToLower(countryCommonName) || countryInputLow == strings.ToLower(countryName.Official) {
 		newCountryData.FollowupContent = fmt.Sprintf("Your guess was **correct**! It was **%s**. %s", countryCommonName, country.Flag)
 		newCountryData.Streak = streak + 1
-		util.SendNewCountryMessages(newCountryData)
+		util.SendGameUpdates(newCountryData)
 	} else {
 		if difficulty == util.GameDifficultyNormal {
 			err := event.CreateMessage(discord.NewMessageCreateBuilder().
@@ -203,7 +203,7 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 			} else {
 				newCountryData.FollowupContent = fmt.Sprintf("Your guess was **incorrect** and you've lost your streak of **%d**! It was **%s**. %s", streak, countryCommonName, country.Flag)
 			}
-			util.SendNewCountryMessages(newCountryData)
+			util.SendGameUpdates(newCountryData)
 		}
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/disgoorg/log"
 )
 
-func SendNewCountryMessages(data NewCountryData) {
+func SendGameUpdates(data NewCountryData) {
 	client := data.Client
 	interaction := data.Interaction
 	token := interaction.Token()
