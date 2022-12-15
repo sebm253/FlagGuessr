@@ -16,7 +16,7 @@ var IndexBoundaries = make(map[int]int)
 var CountrySlice = make([]Country, 0)
 var boundaries = []int{10000000, 5000000, 1000000, 500000, 250000, 100000, 50000, 10000}
 
-func PopulateCountryMap() {
+func PopulateCountries() {
 	response, err := http.Get(apiUrl)
 	if err != nil {
 		panic(err)

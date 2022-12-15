@@ -21,7 +21,7 @@ import (
 )
 
 func main() {
-	data.PopulateCountryMap()
+	data.PopulateCountries()
 
 	log.SetLevel(log.LevelInfo)
 	log.Info("starting the bot...")
