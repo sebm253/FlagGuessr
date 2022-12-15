@@ -135,12 +135,12 @@ func onButton(event *events.ComponentInteractionCreate) {
 			} else {
 				hint = fmt.Sprintf("The Top Level Domains of this country are **%s**.", strings.Join(tlds, ", "))
 			}
-		case util.Capitols:
-			capitols := country.Capitols
-			if len(capitols) == 0 {
-				hint = "This country has no capitols."
+		case util.Capitals:
+			capitals := country.Capitals
+			if len(capitals) == 0 {
+				hint = "This country has no capitals."
 			} else {
-				hint = fmt.Sprintf("The capitols of this country are **%s**.", strings.Join(capitols, ", "))
+				hint = fmt.Sprintf("The capitals of this country are **%s**.", strings.Join(capitals, ", "))
 			}
 		}
 		err := event.UpdateMessage(discord.NewMessageUpdateBuilder().
