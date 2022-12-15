@@ -66,13 +66,13 @@ func onButton(event *events.ComponentInteractionCreate) {
 	_ = json.Unmarshal([]byte(buttonID), &stateData)
 
 	actionType := stateData.ActionType
-	cca := stateData.Cca
-	country := data.CountryMap[cca]
-	name := country.Name.Common
+	countryCca := stateData.Cca
+	country := data.CountryMap[countryCca]
+	countryCommonName := country.Name.Common
 	messageBuilder := discord.NewMessageCreateBuilder()
 	if actionType == util.ActionTypeDetails {
 		err := event.CreateMessage(messageBuilder.
-			SetContentf("Viewing details for **%s** %s %s", name, country.Flag, util.GetCountryInfo(country)).
+			SetContentf("Viewing details for **%s** %s %s", countryCommonName, country.Flag, util.GetCountryInfo(country)).
 			SetEphemeral(true).
 			Build())
 		if err != nil {
@@ -96,7 +96,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 	case util.ActionTypeGuess:
 		marshalledData, _ := json.Marshal(util.ModalStateData{
 			Difficulty: stateData.Difficulty,
-			Cca:        cca,
+			Cca:        countryCca,
 			Streak:     stateData.Streak,
 		})
 		err := event.CreateModal(discord.NewModalCreateBuilder().
@@ -113,9 +113,9 @@ func onButton(event *events.ComponentInteractionCreate) {
 		util.SendGameUpdates(util.NewCountryData{
 			Interaction:     event,
 			User:            user,
-			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", name, country.Flag),
+			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", countryCommonName, country.Flag),
 			Difficulty:      stateData.Difficulty,
-			Cca:             cca,
+			Cca:             countryCca,
 			Client:          client,
 		})
 	case util.ActionTypeDelete:

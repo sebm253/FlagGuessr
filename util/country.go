@@ -14,8 +14,8 @@ import (
 
 func GetCountryCreate(user discord.User, difficulty GameDifficulty, streak int) discord.MessageCreate {
 	keys := maps.Keys(data.CountryMap)
-	cca := keys[rand.Intn(len(keys))]
-	country := data.CountryMap[cca]
+	countryCca := keys[rand.Intn(len(keys))]
+	country := data.CountryMap[countryCca]
 	userID := user.ID
 	embedBuilder := discord.NewEmbedBuilder()
 	embedBuilder.SetTitle("Guess the country!")
@@ -29,7 +29,7 @@ func GetCountryCreate(user discord.User, difficulty GameDifficulty, streak int) 
 		AddActionRow(GetGuessButtons(ButtonStateData{
 			UserID:     userID,
 			Difficulty: difficulty,
-			Cca:        cca,
+			Cca:        countryCca,
 			Streak:     streak,
 		})...).
 		Build()
