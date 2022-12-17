@@ -8,7 +8,7 @@ import (
 	"sort"
 )
 
-var (
+const (
 	apiUrl = "https://restcountries.com/v3.1/all"
 )
 
@@ -34,7 +34,7 @@ func PopulateCountries() {
 	sort.Slice(CountrySlice, func(i, j int) bool {
 		return CountrySlice[i].Population > CountrySlice[j].Population
 	})
-	var currentBoundaryIndex int
+	currentBoundaryIndex := 0
 	for i, country := range CountrySlice {
 		if currentBoundaryIndex == len(popBoundaries) {
 			break
