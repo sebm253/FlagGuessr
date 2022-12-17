@@ -12,14 +12,22 @@ func SendGameUpdates(data NewCountryData) {
 	token := interaction.Token()
 	user := data.User
 	err := client.CreateInteractionResponse(interaction.ID(), token, discord.InteractionResponse{
-		Type: discord.InteractionResponseTypeUpdateMessage,
-		Data: GetCountryCreate(GameStartData{
-			User:          user,
-			Difficulty:    data.Difficulty,
-			MinPopulation: data.MinPopulation,
-			Streak:        data.Streak,
-		}),
+		Type: discord.InteractionResponseTypeDeferredUpdateMessage,
 	})
+	if err != nil {
+		log.Error("there was an error while deferring update message: ", err)
+	}
+	applicationID := interaction.ApplicationID()
+	err = client.DeleteInteractionResponse(applicationID, token)
+	if err != nil {
+		log.Error("there was an error while deleting original interaction response: ", err)
+	}
+	_, err = client.CreateFollowupMessage(applicationID, token, GetCountryCreate(GameStartData{
+		User:          user,
+		Difficulty:    data.Difficulty,
+		MinPopulation: data.MinPopulation,
+		Streak:        data.Streak,
+	}))
 	if err != nil {
 		log.Error("there was an error while creating new country message: ", err)
 	}
@@ -28,7 +36,7 @@ func SendGameUpdates(data NewCountryData) {
 		SliceIndex: data.SliceIndex,
 		ActionType: ActionTypeDetails,
 	})
-	_, err = client.CreateFollowupMessage(interaction.ApplicationID(), token, discord.NewMessageCreateBuilder().
+	_, err = client.CreateFollowupMessage(applicationID, token, discord.NewMessageCreateBuilder().
 		SetContent(data.FollowupContent).
 		AddActionRow(discord.NewSecondaryButton("See country details", string(stateData)).
 			WithEmoji(discord.ComponentEmoji{
