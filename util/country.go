@@ -14,8 +14,9 @@ import (
 func GetCountryCreate(startData GameStartData) discord.MessageCreate {
 	user := startData.User
 	userID := user.ID
-	streak := startData.Streak
 	minPopulation := startData.MinPopulation
+	streak := startData.Streak
+	ephemeral := startData.Ephemeral
 	countryIndex, country := getRandomCountry(minPopulation)
 	embedBuilder := discord.NewEmbedBuilder()
 	embedBuilder.SetTitle("Guess the country!")
@@ -31,10 +32,10 @@ func GetCountryCreate(startData GameStartData) discord.MessageCreate {
 			Difficulty:    startData.Difficulty,
 			MinPopulation: minPopulation,
 			SliceIndex:    countryIndex,
-			Ephemeral:     startData.Ephemeral,
+			Ephemeral:     ephemeral,
 			Streak:        streak,
 		})...).
-		SetEphemeral(startData.Ephemeral).
+		SetEphemeral(ephemeral).
 		Build()
 }
 
