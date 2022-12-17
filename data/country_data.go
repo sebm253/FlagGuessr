@@ -14,7 +14,7 @@ var (
 
 var IndexBoundaries = make(map[int]int)
 var CountrySlice = make([]Country, 0)
-var boundaries = []int{10000000, 5000000, 1000000, 500000, 250000, 100000, 50000, 10000}
+var popBoundaries = []int{10000000, 5000000, 1000000, 500000, 250000, 100000, 50000, 10000}
 
 func PopulateCountries() {
 	response, err := http.Get(apiUrl)
@@ -34,11 +34,15 @@ func PopulateCountries() {
 	sort.Slice(CountrySlice, func(i, j int) bool {
 		return CountrySlice[i].Population > CountrySlice[j].Population
 	})
+	var currentBoundaryIndex int
 	for i, country := range CountrySlice {
-		for _, boundary := range boundaries {
-			if country.Population > boundary {
-				IndexBoundaries[boundary] = i
-			}
+		if currentBoundaryIndex == len(popBoundaries) {
+			break
+		}
+		popBoundary := popBoundaries[currentBoundaryIndex]
+		if popBoundary > country.Population {
+			IndexBoundaries[popBoundary] = i - 1
+			currentBoundaryIndex++
 		}
 	}
 	l := len(CountrySlice)
