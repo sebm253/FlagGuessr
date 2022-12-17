@@ -55,6 +55,16 @@ const (
 	GameDifficultyHard
 )
 
+func (g GameDifficulty) String() string {
+	switch g {
+	case GameDifficultyNormal:
+		return "Normal"
+	case GameDifficultyHard:
+		return "Hard"
+	}
+	return "Unknown"
+}
+
 type ModalStateData struct {
 	Difficulty    GameDifficulty `json:"d"`
 	MinPopulation int            `json:"m"`
