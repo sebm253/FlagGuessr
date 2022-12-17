@@ -26,6 +26,7 @@ func SendGameUpdates(data NewCountryData) {
 		User:          user,
 		Difficulty:    data.Difficulty,
 		MinPopulation: data.MinPopulation,
+		Ephemeral:     data.Ephemeral,
 		Streak:        data.Streak,
 	}))
 	if err != nil {

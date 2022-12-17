@@ -31,8 +31,10 @@ func GetCountryCreate(startData GameStartData) discord.MessageCreate {
 			Difficulty:    startData.Difficulty,
 			MinPopulation: minPopulation,
 			SliceIndex:    countryIndex,
+			Ephemeral:     startData.Ephemeral,
 			Streak:        streak,
 		})...).
+		SetEphemeral(startData.Ephemeral).
 		Build()
 }
 

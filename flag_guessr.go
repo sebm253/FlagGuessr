@@ -56,10 +56,15 @@ func onCommand(event *events.ApplicationCommandInteractionCreate) {
 	interactionData := event.SlashCommandInteractionData()
 	if interactionData.CommandName() == "flag" {
 		difficulty := interactionData.Int("difficulty")
+		ephemeral, ok := interactionData.OptBool("hide")
+		if !ok {
+			ephemeral = true
+		}
 		_ = event.CreateMessage(util.GetCountryCreate(util.GameStartData{
 			User:          event.User(),
 			Difficulty:    util.GameDifficulty(difficulty),
 			MinPopulation: interactionData.Int("min-population"),
+			Ephemeral:     ephemeral,
 		}))
 	}
 }
@@ -96,13 +101,17 @@ func onButton(event *events.ComponentInteractionCreate) {
 		}
 		return
 	}
+	difficulty := stateData.Difficulty
+	minPopulation := stateData.MinPopulation
+	ephemeral := stateData.Ephemeral
 	client := event.Client().Rest()
 	switch actionType {
 	case util.ActionTypeGuess:
 		marshalledData, _ := json.Marshal(util.ModalStateData{
-			Difficulty:    stateData.Difficulty,
-			MinPopulation: stateData.MinPopulation,
+			Difficulty:    difficulty,
+			MinPopulation: minPopulation,
 			SliceIndex:    countryIndex,
+			Ephemeral:     ephemeral,
 			Streak:        stateData.Streak,
 		})
 		err := event.CreateModal(discord.NewModalCreateBuilder().
@@ -120,8 +129,9 @@ func onButton(event *events.ComponentInteractionCreate) {
 			Interaction:     event,
 			User:            user,
 			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", countryCommonName, flag),
-			Difficulty:      stateData.Difficulty,
-			MinPopulation:   stateData.MinPopulation,
+			Difficulty:      difficulty,
+			MinPopulation:   minPopulation,
+			Ephemeral:       ephemeral,
 			SliceIndex:      countryIndex,
 			Client:          client,
 		})
@@ -189,6 +199,7 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 		User:          event.User(),
 		Difficulty:    difficulty,
 		MinPopulation: stateData.MinPopulation,
+		Ephemeral:     stateData.Ephemeral,
 		SliceIndex:    countryIndex,
 		Client:        event.Client().Rest(),
 	}

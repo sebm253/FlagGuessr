@@ -19,11 +19,14 @@ func GetGuessButtons(stateData ButtonStateData) []discord.InteractiveComponent {
 			Name: "❓",
 		}).
 		WithDisabled(stateData.HintType == HintTypeUnknown)
-	deleteButton := discord.NewDangerButton("Delete", marshalStateData(stateData, ActionTypeDelete)).
-		WithEmoji(discord.ComponentEmoji{
-			Name: "🗑",
-		})
-	return []discord.InteractiveComponent{guessButton, newCountryButton, hintButton, deleteButton}
+	components := []discord.InteractiveComponent{guessButton, newCountryButton, hintButton}
+	if !stateData.Ephemeral {
+		components = append(components, discord.NewDangerButton("Delete", marshalStateData(stateData, ActionTypeDelete)).
+			WithEmoji(discord.ComponentEmoji{
+				Name: "🗑",
+			}))
+	}
+	return components
 }
 
 func marshalStateData(stateData ButtonStateData, actionType ActionType) string {

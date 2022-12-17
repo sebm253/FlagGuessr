@@ -31,8 +31,9 @@ type NewCountryData struct {
 	FollowupContent string
 	Difficulty      GameDifficulty
 	MinPopulation   int
-	Streak          int
 	SliceIndex      int
+	Ephemeral       bool
+	Streak          int
 	Client          rest.Rest
 }
 
@@ -41,6 +42,7 @@ type ButtonStateData struct {
 	Difficulty    GameDifficulty `json:"d"`
 	MinPopulation int            `json:"m"`
 	SliceIndex    int            `json:"i"`
+	Ephemeral     bool           `json:"e"`
 	Streak        int            `json:"s"`
 	ActionType    ActionType     `json:"a"`
 	HintType      HintType       `json:"h"`
@@ -57,6 +59,7 @@ type ModalStateData struct {
 	Difficulty    GameDifficulty `json:"d"`
 	MinPopulation int            `json:"m"`
 	SliceIndex    int            `json:"i"`
+	Ephemeral     bool           `json:"e"`
 	Streak        int            `json:"s"`
 }
 
@@ -64,5 +67,6 @@ type GameStartData struct {
 	User          discord.User
 	Difficulty    GameDifficulty
 	MinPopulation int
+	Ephemeral     bool
 	Streak        int
 }
