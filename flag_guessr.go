@@ -70,13 +70,14 @@ func onButton(event *events.ComponentInteractionCreate) {
 	_ = json.Unmarshal([]byte(buttonID), &stateData)
 
 	actionType := stateData.ActionType
+	messageBuilder := discord.NewMessageCreateBuilder()
 	countryIndex := stateData.SliceIndex
 	country := data.CountrySlice[countryIndex]
 	countryCommonName := country.Name.Common
-	messageBuilder := discord.NewMessageCreateBuilder()
+	flag := country.Flag
 	if actionType == util.ActionTypeDetails {
 		err := event.CreateMessage(messageBuilder.
-			SetContentf("Viewing details for **%s** %s %s", countryCommonName, country.Flag, util.GetCountryInfo(country)).
+			SetContentf("Viewing details for **%s** %s %s", countryCommonName, flag, util.GetCountryInfo(country)).
 			SetEphemeral(true).
 			Build())
 		if err != nil {
@@ -118,7 +119,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 		util.SendGameUpdates(util.NewCountryData{
 			Interaction:     event,
 			User:            user,
-			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", countryCommonName, country.Flag),
+			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", countryCommonName, flag),
 			Difficulty:      stateData.Difficulty,
 			MinPopulation:   stateData.MinPopulation,
 			SliceIndex:      countryIndex,
@@ -157,11 +158,10 @@ func onButton(event *events.ComponentInteractionCreate) {
 		if err != nil {
 			log.Error("there was an error while updating message after hint usage: ", err)
 		}
-		_, err = client.CreateFollowupMessage(event.ApplicationID(), event.Token(),
-			discord.NewMessageCreateBuilder().
-				SetContent(hint).
-				SetEphemeral(true).
-				Build())
+		_, err = client.CreateFollowupMessage(event.ApplicationID(), event.Token(), discord.NewMessageCreateBuilder().
+			SetContent(hint).
+			SetEphemeral(true).
+			Build())
 		if err != nil {
 			log.Error("there was an error while creating hint message: ", err)
 		}
@@ -182,6 +182,7 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 	country := data.CountrySlice[countryIndex]
 	countryName := country.Name
 	countryCommonName := countryName.Common
+	flag := country.Flag
 	streak := stateData.Streak
 	newCountryData := util.NewCountryData{
 		Interaction:   event,
@@ -192,7 +193,7 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 		Client:        event.Client().Rest(),
 	}
 	if countryInputLow == strings.ToLower(countryCommonName) || countryInputLow == strings.ToLower(countryName.Official) {
-		newCountryData.FollowupContent = fmt.Sprintf("Your guess was **correct**! It was **%s**. %s", countryCommonName, country.Flag)
+		newCountryData.FollowupContent = fmt.Sprintf("Your guess was **correct**! It was **%s**. %s", countryCommonName, flag)
 		newCountryData.Streak = streak + 1
 		util.SendGameUpdates(newCountryData)
 	} else {
@@ -206,9 +207,9 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 			}
 		} else if difficulty == util.GameDifficultyHard {
 			if streak == 0 {
-				newCountryData.FollowupContent = fmt.Sprintf("Your guess was **incorrect**. It was %s. %s", countryCommonName, country.Flag)
+				newCountryData.FollowupContent = fmt.Sprintf("Your guess was **incorrect**. It was %s. %s", countryCommonName, flag)
 			} else {
-				newCountryData.FollowupContent = fmt.Sprintf("Your guess was **incorrect** and you've lost your streak of **%d**! It was **%s**. %s", streak, countryCommonName, country.Flag)
+				newCountryData.FollowupContent = fmt.Sprintf("Your guess was **incorrect** and you've lost your streak of **%d**! It was **%s**. %s", streak, countryCommonName, flag)
 			}
 			util.SendGameUpdates(newCountryData)
 		}

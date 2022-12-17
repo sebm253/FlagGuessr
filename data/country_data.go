@@ -41,5 +41,7 @@ func PopulateCountries() {
 			}
 		}
 	}
-	log.Infof("loaded %d countries.", len(CountrySlice))
+	l := len(CountrySlice)
+	IndexBoundaries[0] = l
+	log.Infof("loaded %d countries.", l)
 }

@@ -51,13 +51,8 @@ func FormatPopulation(country data.Country) string {
 }
 
 func getRandomCountry(minPopulation int) (int, data.Country) {
-	countries := data.CountrySlice
-	boundary := len(countries)
-	if minPopulation != 0 {
-		boundary = data.IndexBoundaries[minPopulation]
-	}
-	i := rand.Intn(boundary)
-	return i, countries[i]
+	i := rand.Intn(data.IndexBoundaries[minPopulation])
+	return i, data.CountrySlice[i]
 }
 
 func formatRawPopulation(population int) string {
