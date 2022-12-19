@@ -20,6 +20,7 @@ type HintType int
 
 const (
 	HintTypePopulation HintType = iota
+	HintTypeDrivingSide
 	HintTypeTlds
 	HintTypeCapitals
 	HintTypeUnknown

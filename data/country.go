@@ -12,7 +12,10 @@ type Country struct {
 		GoogleMaps string `json:"googleMaps"`
 	} `json:"maps"`
 	Population int `json:"population"`
-	Flags      struct {
+	Car        struct {
+		Side string `json:"side"`
+	} `json:"car"`
+	Flags struct {
 		Png string `json:"png"`
 	} `json:"flags"`
 }

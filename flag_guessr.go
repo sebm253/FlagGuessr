@@ -146,6 +146,8 @@ func onButton(event *events.ComponentInteractionCreate) {
 		switch hintType {
 		case util.HintTypePopulation:
 			hint = fmt.Sprintf("The population of this country is %s.", util.FormatPopulation(country))
+		case util.HintTypeDrivingSide:
+			hint = fmt.Sprintf("This country drives on the **%s**.", country.Car.Side)
 		case util.HintTypeTlds:
 			tlds := country.Tlds
 			if len(tlds) == 0 {
