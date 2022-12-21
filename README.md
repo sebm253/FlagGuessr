@@ -6,7 +6,7 @@ Flag Guessr is a minigame Discord bot about guessing countries based on their fl
 
 ## Features
 
-- There's a pool of 250 countries and territories
+- Pool of 250 countries and territories
 - [Hints](#hints), if you don't recognize the flag
 - [Options that enhance your experience](#options)
 - Users can only interact with their games
