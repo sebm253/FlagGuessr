@@ -75,8 +75,8 @@ Flag Guessr is completely stateless - information about games is stored in butto
 
 [`s`](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L47): current **s**treak
 
-[`a`](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L48): **a**ction the button should execute
+[`a`](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L48): [**a**ction the button should execute](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L9-#L17)
 
-[`h`](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L49): current **h**int
+[`h`](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L49): [current **h**int](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L19-#L27)
 
 [^1]: https://i.imgur.com/tAwsq6A.png
