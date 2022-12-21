@@ -24,7 +24,7 @@ Flag Guessr is a minigame Discord bot about guessing countries based on their fl
 ### Options
 
 1. Difficulty (Normal & Hard) - on Hard difficulty, guessing a country incorrectly will result in immediately losing the streak
-2. Minimum population - predefined set of populations[^1] to filter countries
+2. Minimum population - [predefined set of populations](https://i.imgur.com/tAwsq6A.png) to filter countries
 3. Hide - whether the game embeds should only be visible to the user
 
 ![](https://i.imgur.com/9owCmJE.png)
@@ -88,5 +88,3 @@ Flag Guessr is completely stateless - information about games is stored in butto
 [`a`](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L48): [**a**ction the button should execute](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L9-#L17)
 
 [`h`](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L49): [current **h**int](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L19-#L27)
-
-[^1]: https://i.imgur.com/tAwsq6A.png
