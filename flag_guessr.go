@@ -30,7 +30,7 @@ func main() {
 	client, err := disgo.New(os.Getenv("FLAG_GUESSR_TOKEN"),
 		bot.WithGatewayConfigOpts(gateway.WithIntents(gateway.IntentsNone),
 			gateway.WithPresenceOpts(gateway.WithWatchingActivity("your guesses"))),
-		bot.WithCacheConfigOpts(cache.WithCacheFlags(cache.FlagsNone)),
+		bot.WithCacheConfigOpts(cache.WithCaches(cache.FlagsNone)),
 		bot.WithEventListeners(&events.ListenerAdapter{
 			OnApplicationCommandInteraction: onCommand,
 			OnComponentInteraction:          onButton,
