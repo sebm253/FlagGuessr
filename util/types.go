@@ -27,7 +27,7 @@ const (
 )
 
 type NewCountryData struct {
-	Interaction     discord.BaseInteraction
+	Interaction     discord.Interaction
 	User            discord.User
 	FollowupContent string
 	Difficulty      GameDifficulty
