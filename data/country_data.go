@@ -3,7 +3,6 @@ package data
 import (
 	"encoding/json"
 	"github.com/disgoorg/log"
-	"io"
 	"net/http"
 	"sort"
 )
@@ -21,14 +20,9 @@ func PopulateCountries() {
 	if err != nil {
 		panic(err)
 	}
-	closer := response.Body
-	body, err := io.ReadAll(closer)
-	err = closer.Close()
-	if err != nil {
-		panic(err)
-	}
-	err = json.Unmarshal(body, &CountrySlice)
-	if err != nil {
+	body := response.Body
+	defer body.Close()
+	if err = json.NewDecoder(body).Decode(&CountrySlice); err != nil {
 		panic(err)
 	}
 	sort.Slice(CountrySlice, func(i, j int) bool {
