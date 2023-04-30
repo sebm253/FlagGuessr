@@ -1,4 +1,4 @@
-module flag-guessr
+module flag_guessr
 
 go 1.20
 
