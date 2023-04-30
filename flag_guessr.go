@@ -9,8 +9,8 @@ import (
 	"strings"
 	"syscall"
 
-	"flag-guessr/data"
-	"flag-guessr/util"
+	"flag_guessr/data"
+	"flag_guessr/util"
 	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/cache"

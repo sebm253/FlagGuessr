@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"flag-guessr/data"
+	"flag_guessr/data"
 	"github.com/disgoorg/disgo/discord"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
