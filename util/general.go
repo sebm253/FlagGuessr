@@ -16,11 +16,12 @@ func SendGameUpdates(data NewCountryData) {
 	})
 	if err != nil {
 		log.Error("there was an error while deferring update message: ", err)
+		return
 	}
 	applicationID := interaction.ApplicationID()
-	err = client.DeleteInteractionResponse(applicationID, token)
-	if err != nil {
+	if err := client.DeleteInteractionResponse(applicationID, token); err != nil {
 		log.Error("there was an error while deleting original interaction response: ", err)
+		return
 	}
 	_, err = client.CreateFollowupMessage(applicationID, token, GetCountryCreate(GameStartData{
 		User:          user,
@@ -31,6 +32,7 @@ func SendGameUpdates(data NewCountryData) {
 	}))
 	if err != nil {
 		log.Error("there was an error while creating new country message: ", err)
+		return
 	}
 	stateData, _ := json.Marshal(&ButtonStateData{
 		UserID:     user.ID,
