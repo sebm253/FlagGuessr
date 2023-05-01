@@ -43,10 +43,10 @@ func main() {
 	defer client.Close(context.TODO())
 
 	if client.OpenGateway(context.TODO()) != nil {
-		log.Fatalf("error while connecting to the gateway: %s", err)
+		log.Fatal("error while connecting to the gateway: ", err)
 	}
 
-	log.Infof("flag guessr bot is now running.")
+	log.Info("flag guessr bot is now running.")
 	s := make(chan os.Signal, 1)
 	signal.Notify(s, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-s
