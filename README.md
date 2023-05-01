@@ -70,7 +70,7 @@ Flag Guessr is completely stateless - information about games is stored in butto
 }
 ```
 
-#### Explanation
+#### Breakdown
 
 
 [`u`](https://github.com/caneleex/FlagGuessr/blob/main/util/types.go#L42): **u**ser ID, used for checking who can interact with the game embed
