@@ -114,7 +114,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 			Ephemeral:     ephemeral,
 			Streak:        stateData.Streak,
 		})
-		err := event.CreateModal(discord.NewModalCreateBuilder().
+		err := event.Modal(discord.NewModalCreateBuilder().
 			SetCustomID(string(marshalledData)).
 			SetTitle("Guess the country!").
 			AddActionRow(discord.NewShortTextInput("input", "Country name").
