@@ -24,7 +24,6 @@ func GetCountryCreate(startData GameStartData) discord.MessageCreate {
 	embedBuilder.SetColor(0xFFFFFF)
 	embedBuilder.SetImage(country.Flags.Png)
 	embedBuilder.SetThumbnail(user.EffectiveAvatarURL())
-	embedBuilder.SetFooterText("Country data provided by restcountries.com")
 	return discord.NewMessageCreateBuilder().
 		SetEmbeds(embedBuilder.Build()).
 		AddActionRow(GetGuessButtons(ButtonStateData{
