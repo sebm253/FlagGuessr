@@ -9,15 +9,14 @@ Flag Guessr is a minigame Discord bot about guessing countries based on their fl
 - Pool of 250 countries and territories
 - [Hints](#hints), if you don't recognize the flag
 - [Options that enhance your experience](#options)
-- Users can only interact with their games
-- The bot is completely stateless
+- Country streaks
 
 ### Hints
 
-1. Population
-2. Driving side
-3. Top Level Domains
-4. Capitals
+1. Driving side
+2. Population
+3. Capitals
+4. Top Level Domains
 
 ![](https://i.imgur.com/mz030o1.png)
 
@@ -31,9 +30,7 @@ Flag Guessr is a minigame Discord bot about guessing countries based on their fl
 
 ## Ideas for expansion
 
-1. US states
-2. Canadian provinces
-3. Leaderboard system
+1. Leaderboard system
 
 ## Ready to play?
 
