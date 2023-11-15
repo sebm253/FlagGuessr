@@ -55,14 +55,13 @@ func main() {
 func onCommand(event *events.ApplicationCommandInteractionCreate) {
 	interactionData := event.SlashCommandInteractionData()
 	if interactionData.CommandName() == "flag" {
-		difficulty := interactionData.Int("difficulty")
 		ephemeral, ok := interactionData.OptBool("hide")
 		if !ok {
 			ephemeral = true
 		}
 		_ = event.CreateMessage(util.GetCountryCreate(util.GameStartData{
 			User:          event.User(),
-			Difficulty:    util.GameDifficulty(difficulty),
+			Difficulty:    util.GameDifficulty(interactionData.Int("difficulty")),
 			MinPopulation: interactionData.Int("min-population"),
 			Ephemeral:     ephemeral,
 		}))
@@ -74,27 +73,22 @@ func onButton(event *events.ComponentInteractionCreate) {
 	buttonID := event.Data.CustomID()
 	_ = json.Unmarshal([]byte(buttonID), &stateData)
 
+	messageBuilder := discord.NewMessageCreateBuilder().SetEphemeral(true)
 	actionType := stateData.ActionType
-	messageBuilder := discord.NewMessageCreateBuilder()
 	countryIndex := stateData.SliceIndex
 	country := data.CountrySlice[countryIndex]
-	countryCommonName := country.Name.Common
-	flag := country.Flag
 	if actionType == util.ActionTypeDetails {
 		err := event.CreateMessage(messageBuilder.
-			SetContentf("Viewing details for **%s** %s %s", countryCommonName, flag, util.GetCountryInfo(country)).
-			SetEphemeral(true).
+			SetContentf("Viewing details for **%s** %s %s", country.Name.Common, country.Flag, util.GetCountryInfo(country)).
 			Build())
 		if err != nil {
 			log.Error("there was an error while creating details message: ", err)
 		}
 		return
 	}
-	user := event.User()
-	if stateData.UserID != user.ID {
+	if stateData.UserID != event.User().ID {
 		err := event.CreateMessage(messageBuilder.
 			SetContent("You can't interact with games of other users! Launch your own game by using </flag:1007718785345667284>.").
-			SetEphemeral(true).
 			Build())
 		if err != nil {
 			log.Error("there was an error while creating error message: ", err)
@@ -127,8 +121,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 	case util.ActionTypeNewCountry:
 		util.SendGameUpdates(util.NewCountryData{
 			Interaction:     event,
-			User:            user,
-			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", countryCommonName, flag),
+			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", country.Name.Common, country.Flag),
 			Difficulty:      difficulty,
 			MinPopulation:   minPopulation,
 			Ephemeral:       ephemeral,
@@ -141,25 +134,24 @@ func onButton(event *events.ComponentInteractionCreate) {
 		}
 	case util.ActionTypeHint:
 		hintType := stateData.HintType
-		var hint string
 		switch hintType {
-		case util.HintTypePopulation:
-			hint = fmt.Sprintf("The population of this country is %s.", util.FormatPopulation(country))
 		case util.HintTypeDrivingSide:
-			hint = fmt.Sprintf("This country drives on the **%s**.", country.Car.Side)
-		case util.HintTypeTlds:
-			tlds := country.Tlds
-			if len(tlds) == 0 {
-				hint = "This country has no Top Level Domains."
-			} else {
-				hint = fmt.Sprintf("The Top Level Domains of this country are **%s**.", strings.Join(tlds, ", "))
-			}
+			messageBuilder.SetContentf("This country drives on the **%s**.", country.Car.Side)
+		case util.HintTypePopulation:
+			messageBuilder.SetContentf("The population of this country is %s.", util.FormatPopulation(country))
 		case util.HintTypeCapitals:
 			capitals := country.Capitals
 			if len(capitals) == 0 {
-				hint = "This country has no capitals."
+				messageBuilder.SetContent("This country has no capitals.")
 			} else {
-				hint = fmt.Sprintf("The capitals of this country are **%s**.", strings.Join(capitals, ", "))
+				messageBuilder.SetContentf("The capitals of this country are **%s**.", strings.Join(capitals, ", "))
+			}
+		case util.HintTypeTlds:
+			tlds := country.Tlds
+			if len(tlds) == 0 {
+				messageBuilder.SetContent("This country has no Top Level Domains.")
+			} else {
+				messageBuilder.SetContentf("The Top Level Domains of this country are **%s**.", strings.Join(tlds, ", "))
 			}
 		}
 		stateData.HintType = hintType + 1
@@ -169,10 +161,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 		if err != nil {
 			log.Error("there was an error while updating message after hint usage: ", err)
 		}
-		_, err = client.CreateFollowupMessage(event.ApplicationID(), event.Token(), discord.NewMessageCreateBuilder().
-			SetContent(hint).
-			SetEphemeral(true).
-			Build())
+		_, err = client.CreateFollowupMessage(event.ApplicationID(), event.Token(), messageBuilder.Build())
 		if err != nil {
 			log.Error("there was an error while creating hint message: ", err)
 		}
@@ -186,44 +175,38 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 	modalID := eventData.CustomID
 	_ = json.Unmarshal([]byte(modalID), &stateData)
 
+	streak := stateData.Streak
 	difficulty := stateData.Difficulty
 	countryIndex := stateData.SliceIndex
+	country := data.CountrySlice[countryIndex]
 	countryInput := eventData.Text("input")
 	countryInputLow := strings.TrimSpace(strings.ToLower(countryInput))
-	country := data.CountrySlice[countryIndex]
-	countryName := country.Name
-	countryCommonName := countryName.Common
-	flag := country.Flag
-	streak := stateData.Streak
 	newCountryData := util.NewCountryData{
 		Interaction:   event,
-		User:          event.User(),
 		Difficulty:    difficulty,
 		MinPopulation: stateData.MinPopulation,
 		Ephemeral:     stateData.Ephemeral,
 		SliceIndex:    countryIndex,
 		Client:        event.Client().Rest(),
 	}
-	if countryInputLow == strings.ToLower(countryCommonName) || countryInputLow == strings.ToLower(countryName.Official) {
-		newCountryData.FollowupContent = fmt.Sprintf("Your guess was **correct**! It was **%s**. %s", countryCommonName, flag)
+	if countryInputLow == strings.ToLower(country.Name.Common) || countryInputLow == strings.ToLower(country.Name.Official) {
+		newCountryData.FollowupContent = fmt.Sprintf("Your guess was **correct**! It was **%s**. %s", country.Name.Common, country.Flag)
 		newCountryData.Streak = streak + 1
 		util.SendGameUpdates(newCountryData)
-	} else {
-		if difficulty == util.GameDifficultyNormal {
-			err := event.CreateMessage(discord.NewMessageCreateBuilder().
-				SetContent("Your guess was **incorrect**. Please try again.").
-				SetEphemeral(true).
-				Build())
-			if err != nil {
-				log.Error("there was an error while creating a followup: ", err)
-			}
-		} else if difficulty == util.GameDifficultyHard {
-			if streak == 0 {
-				newCountryData.FollowupContent = fmt.Sprintf("Your guess was **incorrect**. It was %s. %s", countryCommonName, flag)
-			} else {
-				newCountryData.FollowupContent = fmt.Sprintf("Your guess was **incorrect** and you've lost your streak of **%d**! It was **%s**. %s", streak, countryCommonName, flag)
-			}
-			util.SendGameUpdates(newCountryData)
+	} else if difficulty == util.GameDifficultyNormal {
+		err := event.CreateMessage(discord.NewMessageCreateBuilder().
+			SetContent("Your guess was **incorrect**. Please try again.").
+			SetEphemeral(true).
+			Build())
+		if err != nil {
+			log.Error("there was an error while creating a followup: ", err)
 		}
+	} else if difficulty == util.GameDifficultyHard {
+		if streak == 0 {
+			newCountryData.FollowupContent = fmt.Sprintf("Your guess was **incorrect**. It was %s. %s", country.Name.Common, country.Flag)
+		} else {
+			newCountryData.FollowupContent = fmt.Sprintf("Your guess was **incorrect** and you've lost your streak of **%d**! It was **%s**. %s", streak, country.Name.Common, country.Flag)
+		}
+		util.SendGameUpdates(newCountryData)
 	}
 }

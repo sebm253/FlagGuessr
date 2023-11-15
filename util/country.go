@@ -13,7 +13,6 @@ import (
 
 func GetCountryCreate(startData GameStartData) discord.MessageCreate {
 	user := startData.User
-	userID := user.ID
 	difficulty := startData.Difficulty
 	minPopulation := startData.MinPopulation
 	streak := startData.Streak
@@ -21,7 +20,7 @@ func GetCountryCreate(startData GameStartData) discord.MessageCreate {
 	countryIndex, country := getRandomCountry(minPopulation)
 	embedBuilder := discord.NewEmbedBuilder()
 	embedBuilder.SetTitle("Guess the country!")
-	embedBuilder.SetDescriptionf("Game of <@%d>\n\nDifficulty: **%s**\nMinimum population: %s\n\nStreak: **%d**", userID, difficulty, formatRawPopulation(minPopulation), streak)
+	embedBuilder.SetDescriptionf("Game of %s\n\nDifficulty: **%s**\nMinimum population: %s\n\nStreak: **%d**", user.Mention(), difficulty, formatRawPopulation(minPopulation), streak)
 	embedBuilder.SetColor(0xFFFFFF)
 	embedBuilder.SetImage(country.Flags.Png)
 	embedBuilder.SetThumbnail(user.EffectiveAvatarURL())
@@ -29,7 +28,7 @@ func GetCountryCreate(startData GameStartData) discord.MessageCreate {
 	return discord.NewMessageCreateBuilder().
 		SetEmbeds(embedBuilder.Build()).
 		AddActionRow(GetGuessButtons(ButtonStateData{
-			UserID:        userID,
+			UserID:        user.ID,
 			Difficulty:    difficulty,
 			MinPopulation: minPopulation,
 			SliceIndex:    countryIndex,

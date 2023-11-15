@@ -10,7 +10,7 @@ func SendGameUpdates(data NewCountryData) {
 	client := data.Client
 	interaction := data.Interaction
 	token := interaction.Token()
-	user := data.User
+	user := interaction.User()
 	err := client.CreateInteractionResponse(interaction.ID(), token, discord.InteractionResponse{
 		Type: discord.InteractionResponseTypeDeferredUpdateMessage,
 	})

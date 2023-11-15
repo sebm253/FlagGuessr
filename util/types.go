@@ -19,16 +19,15 @@ const (
 type HintType int
 
 const (
-	HintTypePopulation HintType = iota
-	HintTypeDrivingSide
-	HintTypeTlds
+	HintTypeDrivingSide HintType = iota
+	HintTypePopulation
 	HintTypeCapitals
+	HintTypeTlds
 	HintTypeUnknown
 )
 
 type NewCountryData struct {
 	Interaction     discord.Interaction
-	User            discord.User
 	FollowupContent string
 	Difficulty      GameDifficulty
 	MinPopulation   int

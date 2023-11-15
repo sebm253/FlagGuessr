@@ -16,13 +16,12 @@ var CountrySlice = make([]Country, 0)
 var popBoundaries = []int{10000000, 5000000, 1000000, 500000, 250000, 100000, 50000, 10000}
 
 func PopulateCountries() {
-	response, err := http.Get(apiUrl)
+	rs, err := http.Get(apiUrl)
 	if err != nil {
 		panic(err)
 	}
-	body := response.Body
-	defer body.Close()
-	if err = json.NewDecoder(body).Decode(&CountrySlice); err != nil {
+	defer rs.Body.Close()
+	if err = json.NewDecoder(rs.Body).Decode(&CountrySlice); err != nil {
 		panic(err)
 	}
 	sort.Slice(CountrySlice, func(i, j int) bool {
