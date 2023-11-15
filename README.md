@@ -36,6 +36,10 @@ Flag Guessr is a minigame Discord bot about guessing countries based on their fl
 
 Invite Flag Guessr using [this link](https://discord.com/oauth2/authorize?client_id=1007647563790417960&scope=bot).
 
+## Have a question, suggestion or a concern?
+
+Join the [support server](https://discord.gg/bgku8tPVqN).
+
 ## Technical details
 
 Flag Guessr is completely stateless - information about games is stored in buttons/modals as JSON. This means that there is no database and users don't lose their progress after bot restarts (unless they delete the embeds).
