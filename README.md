@@ -1,6 +1,6 @@
 # FlagGuessr
 
-Flag Guessr is a minigame Discord bot about guessing countries based on their flag and hints related to the country.
+FlagGuessr is a minigame Discord bot about guessing countries based on their flag and hints related to the country.
 
 ![](https://i.imgur.com/PIjix2L.png)
 
