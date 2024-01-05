@@ -1,6 +1,8 @@
 package util
 
 import (
+	"flag-guessr/data"
+
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/rest"
 	"github.com/disgoorg/snowflake/v2"
@@ -35,6 +37,7 @@ type NewCountryData struct {
 	Ephemeral       bool
 	Streak          int
 	Client          rest.Rest
+	CountryData     *data.CountryData
 }
 
 type ButtonStateData struct {
@@ -74,7 +77,7 @@ type ModalStateData struct {
 }
 
 type GameStartData struct {
-	User          discord.User
+	User          *discord.User
 	Difficulty    GameDifficulty
 	MinPopulation int
 	Ephemeral     bool

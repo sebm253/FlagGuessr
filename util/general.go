@@ -2,11 +2,12 @@ package util
 
 import (
 	"encoding/json"
+
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/log"
 )
 
-func SendGameUpdates(data NewCountryData) {
+func SendGameUpdates(data *NewCountryData) {
 	client := data.Client
 	interaction := data.Interaction
 	token := interaction.Token()
@@ -23,13 +24,13 @@ func SendGameUpdates(data NewCountryData) {
 		log.Error("there was an error while deleting original interaction response: ", err)
 		return
 	}
-	_, err = client.CreateFollowupMessage(applicationID, token, GetCountryCreate(GameStartData{
-		User:          user,
+	_, err = client.CreateFollowupMessage(applicationID, token, GetCountryCreate(&GameStartData{
+		User:          &user,
 		Difficulty:    data.Difficulty,
 		MinPopulation: data.MinPopulation,
 		Ephemeral:     data.Ephemeral,
 		Streak:        data.Streak,
-	}))
+	}, data.CountryData))
 	if err != nil {
 		log.Error("there was an error while creating new country message: ", err)
 		return

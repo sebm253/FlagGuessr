@@ -2,22 +2,22 @@ package util
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
 
 	"flag-guessr/data"
+
 	"github.com/disgoorg/disgo/discord"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
-func GetCountryCreate(startData GameStartData) discord.MessageCreate {
+func GetCountryCreate(startData *GameStartData, countryData *data.CountryData) discord.MessageCreate {
 	user := startData.User
 	difficulty := startData.Difficulty
 	minPopulation := startData.MinPopulation
 	streak := startData.Streak
 	ephemeral := startData.Ephemeral
-	countryIndex, country := getRandomCountry(minPopulation)
+	index, country := countryData.GetRandomCountry(minPopulation)
 	embedBuilder := discord.NewEmbedBuilder()
 	embedBuilder.SetTitle("Guess the country!")
 	embedBuilder.SetDescriptionf("Game of %s\n\nDifficulty: **%s**\nMinimum population: %s\n\nStreak: **%d**", user.Mention(), difficulty, formatRawPopulation(minPopulation), streak)
@@ -30,7 +30,7 @@ func GetCountryCreate(startData GameStartData) discord.MessageCreate {
 			UserID:        user.ID,
 			Difficulty:    difficulty,
 			MinPopulation: minPopulation,
-			SliceIndex:    countryIndex,
+			SliceIndex:    index,
 			Ephemeral:     ephemeral,
 			Streak:        streak,
 		})...).
@@ -38,7 +38,7 @@ func GetCountryCreate(startData GameStartData) discord.MessageCreate {
 		Build()
 }
 
-func GetCountryInfo(country data.Country) string {
+func GetCountryInfo(country *data.Country) string {
 	capitals := country.Capitals
 	tlds := country.Tlds
 	population := fmt.Sprintf("Population: %s\n", FormatPopulation(country))
@@ -49,13 +49,8 @@ func GetCountryInfo(country data.Country) string {
 	return "\n\n" + population + side + capital + tld + gMaps
 }
 
-func FormatPopulation(country data.Country) string {
+func FormatPopulation(country *data.Country) string {
 	return formatRawPopulation(country.Population)
-}
-
-func getRandomCountry(minPopulation int) (int, data.Country) {
-	i := rand.Intn(data.IndexBoundaries[minPopulation])
-	return i, data.CountrySlice[i]
 }
 
 func formatRawPopulation(population int) string {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
@@ -11,17 +10,20 @@ import (
 
 	"flag-guessr/data"
 	"flag-guessr/util"
+
 	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/disgo/gateway"
+	"github.com/disgoorg/json"
 	"github.com/disgoorg/log"
 )
 
 func main() {
-	data.PopulateCountries()
+	countryData := &data.CountryData{}
+	countryData.Populate()
 
 	log.SetLevel(log.LevelInfo)
 	log.Info("starting the bot...")
@@ -32,9 +34,15 @@ func main() {
 			gateway.WithPresenceOpts(gateway.WithWatchingActivity("your guesses"))),
 		bot.WithCacheConfigOpts(cache.WithCaches(cache.FlagsNone)),
 		bot.WithEventListeners(&events.ListenerAdapter{
-			OnApplicationCommandInteraction: onCommand,
-			OnComponentInteraction:          onButton,
-			OnModalSubmit:                   onModal,
+			OnApplicationCommandInteraction: func(event *events.ApplicationCommandInteractionCreate) {
+				onCommand(event, countryData)
+			},
+			OnComponentInteraction: func(event *events.ComponentInteractionCreate) {
+				onButton(event, countryData)
+			},
+			OnModalSubmit: func(event *events.ModalSubmitInteractionCreate) {
+				onModal(event, countryData)
+			},
 		}))
 	if err != nil {
 		log.Fatal("error while building disgo instance: ", err)
@@ -52,23 +60,23 @@ func main() {
 	<-s
 }
 
-func onCommand(event *events.ApplicationCommandInteractionCreate) {
+func onCommand(event *events.ApplicationCommandInteractionCreate, countryData *data.CountryData) {
 	interactionData := event.SlashCommandInteractionData()
 	if interactionData.CommandName() == "flag" {
 		ephemeral, ok := interactionData.OptBool("hide")
 		if !ok {
 			ephemeral = true
 		}
-		_ = event.CreateMessage(util.GetCountryCreate(util.GameStartData{
-			User:          event.User(),
+		_ = event.CreateMessage(util.GetCountryCreate(&util.GameStartData{
+			User:          json.Ptr(event.User()),
 			Difficulty:    util.GameDifficulty(interactionData.Int("difficulty")),
 			MinPopulation: interactionData.Int("min-population"),
 			Ephemeral:     ephemeral,
-		}))
+		}, countryData))
 	}
 }
 
-func onButton(event *events.ComponentInteractionCreate) {
+func onButton(event *events.ComponentInteractionCreate, countryData *data.CountryData) {
 	var stateData util.ButtonStateData
 	buttonID := event.Data.CustomID()
 	_ = json.Unmarshal([]byte(buttonID), &stateData)
@@ -76,7 +84,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 	messageBuilder := discord.NewMessageCreateBuilder().SetEphemeral(true)
 	actionType := stateData.ActionType
 	countryIndex := stateData.SliceIndex
-	country := data.CountrySlice[countryIndex]
+	country := countryData.Countries[countryIndex]
 	if actionType == util.ActionTypeDetails {
 		err := event.CreateMessage(messageBuilder.
 			SetContentf("Viewing details for **%s** %s %s", country.Name.Common, country.Flag, util.GetCountryInfo(country)).
@@ -119,7 +127,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 			log.Error("there was an error while creating modal: ", err)
 		}
 	case util.ActionTypeNewCountry:
-		util.SendGameUpdates(util.NewCountryData{
+		util.SendGameUpdates(&util.NewCountryData{
 			Interaction:     event,
 			FollowupContent: fmt.Sprintf("You skipped a country. It was **%s**. %s", country.Name.Common, country.Flag),
 			Difficulty:      difficulty,
@@ -127,6 +135,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 			Ephemeral:       ephemeral,
 			SliceIndex:      countryIndex,
 			Client:          client,
+			CountryData:     countryData,
 		})
 	case util.ActionTypeDelete:
 		if err := client.DeleteMessage(event.Channel().ID(), event.Message.ID); err != nil {
@@ -168,7 +177,7 @@ func onButton(event *events.ComponentInteractionCreate) {
 	}
 }
 
-func onModal(event *events.ModalSubmitInteractionCreate) {
+func onModal(event *events.ModalSubmitInteractionCreate, countryData *data.CountryData) {
 	eventData := event.Data
 
 	var stateData util.ModalStateData
@@ -178,16 +187,17 @@ func onModal(event *events.ModalSubmitInteractionCreate) {
 	streak := stateData.Streak
 	difficulty := stateData.Difficulty
 	countryIndex := stateData.SliceIndex
-	country := data.CountrySlice[countryIndex]
+	country := countryData.Countries[countryIndex]
 	countryInput := eventData.Text("input")
 	countryInputLow := strings.TrimSpace(strings.ToLower(countryInput))
-	newCountryData := util.NewCountryData{
+	newCountryData := &util.NewCountryData{
 		Interaction:   event,
 		Difficulty:    difficulty,
 		MinPopulation: stateData.MinPopulation,
 		Ephemeral:     stateData.Ephemeral,
 		SliceIndex:    countryIndex,
 		Client:        event.Client().Rest(),
+		CountryData:   countryData,
 	}
 	if countryInputLow == strings.ToLower(country.Name.Common) || countryInputLow == strings.ToLower(country.Name.Official) {
 		newCountryData.FollowupContent = fmt.Sprintf("Your guess was **correct**! It was **%s**. %s", country.Name.Common, country.Flag)
