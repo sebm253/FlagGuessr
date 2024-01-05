@@ -24,7 +24,7 @@ func SendGameUpdates(data *NewCountryData) {
 		log.Error("there was an error while deleting original interaction response: ", err)
 		return
 	}
-	_, err = client.CreateFollowupMessage(applicationID, token, GetCountryCreate(&GameStartData{
+	_, err = client.CreateFollowupMessage(applicationID, token, GetCountryCreate(GameStartData{
 		User:          &user,
 		Difficulty:    data.Difficulty,
 		MinPopulation: data.MinPopulation,

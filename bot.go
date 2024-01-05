@@ -67,7 +67,7 @@ func onCommand(event *events.ApplicationCommandInteractionCreate, countryData *d
 		if !ok {
 			ephemeral = true
 		}
-		_ = event.CreateMessage(util.GetCountryCreate(&util.GameStartData{
+		_ = event.CreateMessage(util.GetCountryCreate(util.GameStartData{
 			User:          json.Ptr(event.User()),
 			Difficulty:    util.GameDifficulty(interactionData.Int("difficulty")),
 			MinPopulation: interactionData.Int("min-population"),

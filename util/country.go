@@ -11,7 +11,7 @@ import (
 	"golang.org/x/text/message"
 )
 
-func GetCountryCreate(startData *GameStartData, countryData *data.CountryData) discord.MessageCreate {
+func GetCountryCreate(startData GameStartData, countryData *data.CountryData) discord.MessageCreate {
 	user := startData.User
 	difficulty := startData.Difficulty
 	minPopulation := startData.MinPopulation
