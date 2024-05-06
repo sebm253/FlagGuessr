@@ -7,7 +7,7 @@ require (
 	github.com/disgoorg/json v1.1.0
 	github.com/disgoorg/log v1.2.1
 	github.com/disgoorg/snowflake/v2 v2.0.1
-	golang.org/x/text v0.14.0
+	golang.org/x/text v0.15.0
 )
 
 require (
