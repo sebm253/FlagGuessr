@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	apiUrl = "https://restcountries.com/v3.1/all"
+	dataURL = "https://raw.githubusercontent.com/sebm253/FlagGuessr/main/data.json"
 )
 
 var (
@@ -24,7 +24,7 @@ type CountryData struct {
 }
 
 func (d *CountryData) Populate() {
-	rs, err := http.Get(apiUrl)
+	rs, err := http.Get(dataURL)
 	if err != nil {
 		panic(err)
 	}
