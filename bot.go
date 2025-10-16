@@ -30,8 +30,7 @@ func main() {
 	log.Info("disgo version: ", disgo.Version)
 
 	client, err := disgo.New(os.Getenv("FLAG_GUESSR_TOKEN"),
-		bot.WithGatewayConfigOpts(gateway.WithIntents(gateway.IntentsNone),
-			gateway.WithPresenceOpts(gateway.WithWatchingActivity("your guesses"))),
+		bot.WithGatewayConfigOpts(gateway.WithIntents(gateway.IntentsNone)),
 		bot.WithCacheConfigOpts(cache.WithCaches(cache.FlagsNone)),
 		bot.WithEventListeners(&events.ListenerAdapter{
 			OnApplicationCommandInteraction: func(event *events.ApplicationCommandInteractionCreate) {
