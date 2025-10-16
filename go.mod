@@ -1,6 +1,6 @@
 module flag-guessr
 
-go 1.24.0
+go 1.25
 
 require (
 	github.com/disgoorg/disgo v0.18.16
