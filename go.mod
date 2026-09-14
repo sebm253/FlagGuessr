@@ -1,13 +1,13 @@
 module flag-guessr
 
-go 1.26
+go 1.26.0
 
 require (
 	github.com/disgoorg/disgo v0.18.16
 	github.com/disgoorg/json v1.2.0
 	github.com/disgoorg/log v1.2.1
 	github.com/disgoorg/snowflake/v2 v2.0.3
-	golang.org/x/text v0.41.0
+	golang.org/x/text v0.42.0
 )
 
 require (
